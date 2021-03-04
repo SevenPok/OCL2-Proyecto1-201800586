@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OCL2_Proyecto1_201800586.Analizador;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,10 +13,36 @@ namespace OCL2_Proyecto1_201800586
 {
     public partial class Form1 : Form
     {
+        public static RichTextBox consola;
+        
         public Form1()
         {
             InitializeComponent();
+            consola = richtextbox1;
         }
 
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Run_Click(object sender, EventArgs e)
+        {
+            Sintactico analizador = new Sintactico();
+            bool resultado = analizador.analizar(contenido.Text);
+            if (resultado)
+            {
+                
+            }
+            else
+            {
+                consola.Text = "No esta correcto\n";
+            }
+        }
+
+        private void richConcola_TextChanged(object sender, EventArgs e)
+        {
+            
+        }
     }
 }

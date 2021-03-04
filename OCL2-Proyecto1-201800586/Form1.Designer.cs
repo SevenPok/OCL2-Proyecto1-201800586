@@ -29,13 +29,58 @@ namespace OCL2_Proyecto1_201800586
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.contenido = new System.Windows.Forms.RichTextBox();
+            this.Run = new System.Windows.Forms.Button();
+            this.richtextbox1 = new System.Windows.Forms.RichTextBox();
+            this.SuspendLayout();
+            // 
+            // contenido
+            // 
+            this.contenido.Location = new System.Drawing.Point(12, 68);
+            this.contenido.Name = "contenido";
+            this.contenido.Size = new System.Drawing.Size(967, 175);
+            this.contenido.TabIndex = 1;
+            this.contenido.Text = "";
+            // 
+            // Run
+            // 
+            this.Run.Location = new System.Drawing.Point(12, 21);
+            this.Run.Name = "Run";
+            this.Run.Size = new System.Drawing.Size(75, 23);
+            this.Run.TabIndex = 2;
+            this.Run.Text = "Run";
+            this.Run.UseVisualStyleBackColor = true;
+            this.Run.Click += new System.EventHandler(this.Run_Click);
+            // 
+            // richtextbox1
+            // 
+            this.richtextbox1.Location = new System.Drawing.Point(12, 341);
+            this.richtextbox1.Name = "richtextbox1";
+            this.richtextbox1.Size = new System.Drawing.Size(967, 175);
+            this.richtextbox1.TabIndex = 3;
+            this.richtextbox1.Text = "";
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            this.ClientSize = new System.Drawing.Size(991, 568);
+            this.Controls.Add(this.richtextbox1);
+            this.Controls.Add(this.Run);
+            this.Controls.Add(this.contenido);
+            this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "CompiPascal";
+            this.Load += new System.EventHandler(this.Form1_Load);
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+        private System.Windows.Forms.RichTextBox contenido;
+        private System.Windows.Forms.Button Run;
+        public System.Windows.Forms.RichTextBox richtextbox1;
+      
     }
 }
 
