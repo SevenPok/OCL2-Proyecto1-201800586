@@ -29,6 +29,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                 }
                 else
                 {
+                    texto = "";
                     return null;
                 }
             }

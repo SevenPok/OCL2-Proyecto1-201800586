@@ -55,13 +55,6 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
             this.linea = linea + 1;
             this.columna = columna + 1;
         }
-        public Operacion(Tipo tipo, Operacion izquierda, int linea, int columna)
-        {
-            this.tipo = tipo;
-            this.izquierda = izquierda;
-            this.linea = linea + 1;
-            this.columna = columna + 1;
-        }
 
         public Operacion(String valor, Tipo tipo, int linea, int columna)
         {
@@ -96,85 +89,82 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
         }
         public object ejeuctar(TablaSimbolo ts)
         {
+            Object left;
+            Object right;
             switch (tipo)
             {
                 case Tipo.DIVISION:
-                    try
+                    left = izquierda.ejeuctar(ts);
+                    right = derecha.ejeuctar(ts);
+                    if (left != null && right != null && left is Double && right is Double)
                     {
-                        if ((Double)derecha.ejeuctar(ts) != 0)
-                        {
-                            return (Double)izquierda.ejeuctar(ts) / (Double)derecha.ejeuctar(ts);
+                        if((Double)right != 0) {
+                            return (Double)left / (Double)right;
                         }
-                        else
-                        {
-                            return "Linea: " + linea + " Columna: " + columna + " No se puede dividir dentro de 0\n";
-                        }
+                        Form1.consola.Text += "No se puede dividir entre 0'\n";
+                        return null;
                     }
-                    catch
-                    {
-                        return "Linea: " + linea + " Columna: " + columna + " No se puede dividir '" + izquierda.tipo + "' con '" + derecha.tipo + "'\n";
-                    }    
+                    Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador '/' no se puede ejecutar entre un '" + izquierda.tipo + "' con un '"+ derecha.tipo + "'\n";
+                    return null;
                 case Tipo.MULTIPLICACION:
-                    try
+                    left = izquierda.ejeuctar(ts);
+                    right = derecha.ejeuctar(ts);
+                    if (left != null && right != null && left is Double && right is Double)
                     {
-                        return (Double)izquierda.ejeuctar(ts) * (Double)derecha.ejeuctar(ts);
+                        return (Double)left * (Double)right;   
                     }
-                    catch
-                    {
-                        return "Linea: " + linea + " Columna: " + columna + " No se puede multiplicar '" + izquierda.tipo + "' con '" + derecha.tipo + "'\n";
-                    }
+                    Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador '*' no se puede ejecutar entre un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    return null;
                 case Tipo.RESTA:
-                    try
+                    left = izquierda.ejeuctar(ts);
+                    right = derecha.ejeuctar(ts);
+                    if (left != null && right != null && left is Double && right is Double)
                     {
-                        return (Double)izquierda.ejeuctar(ts) - (Double)derecha.ejeuctar(ts);
+                        return (Double)left - (Double)right;
                     }
-                    catch
-                    {
-                        return "Linea: " + linea + " Columna: " + columna + " No se puede restar '" + izquierda.tipo + "' con '" + derecha.tipo + "'\n";
-                    }
+                    Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador '-' no se puede ejecutar entre un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    return null;
                 case Tipo.SUMA:
-                    try
+                    left = izquierda.ejeuctar(ts);
+                    right = derecha.ejeuctar(ts);
+                    if (left != null && right != null)
                     {
-                        return (Double)izquierda.ejeuctar(ts) + (Double)derecha.ejeuctar(ts);
+                        if (left is Double && right is Double)
+                        {
+                            return (Double)left + (Double)right;
+                        }
+                        else if (left is String && right is String)
+                        {
+                            return (String)((String)left + (String)right);
+                        }
                     }
-                    catch
-                    {
-                        return "Linea: " + linea + " Columna: " + columna + " No se puede sumar '" + izquierda.tipo + "' con '" + derecha.tipo + "'\n";
-                    }
+                    Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador '+' no se puede ejecutar entre un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    return null;
                 case Tipo.MODULAR:
-                    try
+                    left = izquierda.ejeuctar(ts);
+                    right = derecha.ejeuctar(ts);
+                    if (left != null && right != null && left is Double && right is Double)
                     {
-                        if ((Double)derecha.ejeuctar(ts) != 0)
-                        {
-                            return (Double)izquierda.ejeuctar(ts) % (Double)derecha.ejeuctar(ts);
-                        }
-                        else
-                        {
-                            return "Linea: " + linea + " Columna: " + columna + " No se puede sacar el modulo dentro de 0\n";
-                        }
+                        return (Double)left % (Double)right;
                     }
-                    catch
-                    {
-                        return "Linea: " + linea + " Columna: " + columna + " No se puede scar el modulo '" + izquierda.tipo + "' con '" + derecha.tipo + "'\n";
-                    }
+                    Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + "El operador '%' no se puede ejecutar entre un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    return null;
                 case Tipo.NEGATIVO:
-                    try
+                    left = izquierda.ejeuctar(ts);
+                    if (left != null && left is Double)
                     {
-                        return (Double)izquierda.ejeuctar(ts) * -1;
+                        return (Double)left*-1;
                     }
-                    catch
-                    {
-                        return "Linea: " + linea + " Columna: " + columna + " Solo los tipo 'interger' y 'real' pueden ser nagativos";
-                    }
+                    Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador '-' no se puede ejecutar con un '" + izquierda.tipo + "'\n";
+                    return null;
                 case Tipo.NOT:
-                    try
+                    left = izquierda.ejeuctar(ts);
+                    if (left != null && left is Boolean)
                     {
-                        return !(Boolean)izquierda.ejeuctar(ts);
+                        return !(Boolean)left;
                     }
-                    catch
-                    {
-                        return "Linea: " + linea + " Columna: " + columna + " Solo se puede negar las expresiones boolenasa\n";
-                    }
+                    Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador 'not' no se puede ejecutar con un '" + izquierda.tipo + "'\n";
+                    return null;
                 case Tipo.ENTERO:
                     return Double.Parse(valor.ToString());
                 case Tipo.DECIMAL:
@@ -184,89 +174,105 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                     {
                         return ts.getValor(valor.ToString());
                     }
-                    return "";
+                    return null;
                 case Tipo.CADENA:
                     return valor.ToString();
                 case Tipo.BOOLEANA:
                     return Boolean.Parse(valor.ToString());
                 case Tipo.MAYOR:
-                    try
+                    left = izquierda.ejeuctar(ts);
+                    right = derecha.ejeuctar(ts);
+                    if (left != null && right != null && left is Double && right is Double)
                     {
-                        return (Double)izquierda.ejeuctar(ts) > (Double)derecha.ejeuctar(ts);
+                        return (Double)left > (Double)right;
                     }
-                    catch
-                    {
-                        return "Linea: " + linea + " Columna: " + columna + " El operador '>' solo funciona con 'Integer' o 'Real'\n";
-                    }
-
+                    Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador '>' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    return null;
                 case Tipo.MENOR:
-
-                    try
+                    left = izquierda.ejeuctar(ts);
+                    right = derecha.ejeuctar(ts);
+                    if (left != null && right != null && left is Double && right is Double)
                     {
-                        return (Double)izquierda.ejeuctar(ts) < (Double)derecha.ejeuctar(ts);
+                        return (Double)left < (Double)right;
                     }
-                    catch
-                    {
-                        return "Linea: " + linea + " Columna: " + columna + " El operador '<' solo funciona con 'Integer' o 'Real'\n";
-                    }
+                    Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador '<' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    return null;
                 case Tipo.MAYORIGUAL:
-
-                    try
+                    left = izquierda.ejeuctar(ts);
+                    right = derecha.ejeuctar(ts);
+                    if (left != null && right != null && left is Double && right is Double)
                     {
-                        return (Double)izquierda.ejeuctar(ts) >= (Double)derecha.ejeuctar(ts);
+                        return (Double)left >= (Double)right;
                     }
-                    catch
-                    {
-                        return "Linea: " + linea + " Columna: " + columna + " El operador '>=' solo funciona con 'Integer' o 'Real'\n";
-                    }
+                    Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador '>=' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    return null;
                 case Tipo.MENORIGUAL:
-
-                    try
+                    left = izquierda.ejeuctar(ts);
+                    right = derecha.ejeuctar(ts);
+                    if (left != null && right != null && left is Double && right is Double)
                     {
-                        return (Double)izquierda.ejeuctar(ts) <= (Double)derecha.ejeuctar(ts);
+                        return (Double)left <= (Double)right;
                     }
-                    catch
-                    {
-                        return "Linea: " + linea + " Columna: " + columna + " El operador '<=' solo funciona con 'Integer' o 'Real'\n";
-                    }
+                    Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador '<=' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    return null;
                 case Tipo.IGUAL:
-                    try
+                    left = izquierda.ejeuctar(ts);
+                    right = derecha.ejeuctar(ts);
+                    if (left != null && right != null)
                     {
-                        return izquierda.ejeuctar(ts).ToString() == derecha.ejeuctar(ts).ToString();
+                        if(left is Double && right is Double)
+                        {
+                            return (Double)left == (Double)right;
+                        }
+                        else if (left is String && right is String)
+                        {
+                            return (String)left == (String)right;
+                        }
+                        else if (left is Boolean && right is Boolean)
+                        {
+                            return (Boolean)left == (Boolean)right;
+                        }
                     }
-                    catch
-                    {
-                        return "Linea: " + linea + " Columna: " + columna + " El operador '=' dado que no son del mismo tipo\n";
-                    }
-
+                    Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador '=' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    return null;
                 case Tipo.DIFRENTE:
-                    try
+                    left = izquierda.ejeuctar(ts);
+                    right = derecha.ejeuctar(ts);
+                    if (left != null && right != null)
                     {
-                        return izquierda.ejeuctar(ts).ToString() != derecha.ejeuctar(ts).ToString();
+                        if (left is Double && right is Double)
+                        {
+                            return (Double)left != (Double)right;
+                        }
+                        else if (left is String && right is String)
+                        {
+                            return (String)left != (String)right;
+                        }
+                        else if (left is Boolean && right is Boolean)
+                        {
+                            return (Boolean)left != (Boolean)right;
+                        }
                     }
-                    catch
-                    {
-                        return "Linea: " + linea + " Columna: " + columna + " El operador '!=' dado que no son del mismo tipo\n";
-                    }
+                    Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador '<>' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    return null;
                 case Tipo.OR:
-                    try
+                    left = izquierda.ejeuctar(ts);
+                    right = derecha.ejeuctar(ts);
+                    if (left != null && right != null && left is Boolean && right is Boolean)
                     {
-                        return (Boolean)izquierda.ejeuctar(ts) || (Boolean)derecha.ejeuctar(ts);
+                        return (Boolean)left || (Boolean)right;
                     }
-                    catch
-                    {
-                        return "Linea: " + linea + " Columna: " + columna + " El operador 'or' solo funciona con 'true' o 'false'\n";
-                    }
+                    Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador 'or' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    return null;
                 case Tipo.AND:
-                    try
+                    left = izquierda.ejeuctar(ts);
+                    right = derecha.ejeuctar(ts);
+                    if (left != null && right != null && left is Boolean && right is Boolean)
                     {
-                        return (Boolean)izquierda.ejeuctar(ts) && (Boolean)derecha.ejeuctar(ts);
+                        return (Boolean)left && (Boolean)right;
                     }
-                    catch
-                    {
-                        return "Linea: " + linea + " Columna: " + columna + " El operador 'and' solo funciona con 'true' o 'false'\n";
-                    }
-                    
+                    Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador 'and' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    return null;
                 default:
                     return null;
             }

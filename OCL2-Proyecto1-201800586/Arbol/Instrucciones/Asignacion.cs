@@ -3,6 +3,7 @@ using OCL2_Proyecto1_201800586.Arbol.Valores;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
 {
@@ -22,20 +23,64 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
         public object ejeuctar(TablaSimbolo ts)
         {
             string tipo = ts.getTipo(identificador).ToString();
-            if (tipo.Equals(valor.tipo.ToString()))
+            Object aux = valor.ejeuctar(ts);
+            //Form1.consola.Text += aux;
+            if (aux != null)
             {
-                ts.setValor(identificador, valor.ejeuctar(ts));
+                if (tipo == Simbolo.Tipo.ENTERO.ToString())
+                {
+                    if (Regex.IsMatch(aux.ToString(), "^-?[0-9]+$"))
+                    {
+                        ts.setValor(identificador, aux);
+                        return true;
+                    }
+                    else
+                    {
+                        Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " No se puede asignar un tipo '" + aux.GetType().ToString() + "' a un tipo '" + tipo + "'\n";
+                    }
+                }
+                else if (tipo == Simbolo.Tipo.DECIMAL.ToString())
+                {
+                    if (aux.GetType().Equals(typeof(Double)))
+                    {
+                        ts.setValor(identificador, aux);
+                        return true;
+                    }
+                    else
+                    {
+                        Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " No se puede asignar un tipo '" + aux.GetType().ToString() + "' a un tipo '" + tipo + "'\n";
+                    }
+                }
+                else if (tipo == Simbolo.Tipo.CADENA.ToString())
+                {
+                    if (aux.GetType().Equals(typeof(String)))
+                    {
+                        ts.setValor(identificador, aux);
+                        return true;
+                    }
+                    else
+                    {
+                        Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " No se puede asignar un tipo '" + aux.GetType().ToString() + "' a un tipo '" + tipo + "'\n";
+                    }
+                }
+                else if (tipo == Simbolo.Tipo.BOOLEANA.ToString())
+                {
+                    if (aux.GetType().Equals(typeof(Boolean)))
+                    {
+                        ts.setValor(identificador, aux);
+                        return true;
+                    }
+                    else
+                    {
+                        Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " No se puede asignar un tipo '" + aux.GetType().ToString() + "' a un tipo '" + tipo + "'\n";
+                    }
+                }
+                else
+                {
+                    Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " No se puede asignar un tipo '" + aux.GetType().ToString() + "' a un tipo '" + tipo + "'\n";
+                }
             }
-            else if (tipo.Equals("DECIMAL") && valor.tipo.ToString().Equals("ENTERO"))
-            {
-                ts.setValor(identificador, valor.ejeuctar(ts));
-            }
-            else
-            {
-                Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " No se puede asignar un tipo '" + valor.tipo.ToString() + "' a un tipo '" + tipo + "'\n";
-            }
-            
-            return null;
+            return false;
         }
     }
 }

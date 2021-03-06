@@ -11,6 +11,19 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
 
         }
 
+        public Boolean existe(String identificador)
+        {
+            foreach (Simbolo s in this)
+            {
+                if (s.Identificador.Equals(identificador))
+                {
+                    return true;
+                }
+            }
+            Form1.consola.Text += "La variable '" + identificador + "' es desconocida\n";
+            return false;
+        }
+
         public Object getValor(String identificador)
         {
             foreach(Simbolo s in this)

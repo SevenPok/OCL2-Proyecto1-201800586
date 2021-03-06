@@ -26,22 +26,22 @@ namespace OCL2_Proyecto1_201800586.Analizador
             if (raiz != null)
             {
                 Form1.consola.Text = "";
-                //LinkedList<Instruccion> AST;
-                //if (raiz.ChildNodes.Count >= 1)
-                //{
-                //    AST = instrucciones(raiz.ChildNodes.ElementAt(1));
-                //}
-                //else
-                //{
-                //    AST = instrucciones(raiz.ChildNodes.ElementAt(0));
-                //}
+                LinkedList<Instruccion> AST;
+                if (raiz.ChildNodes.Count >= 1)
+                {
+                    AST = instrucciones(raiz.ChildNodes.ElementAt(1));
+                }
+                else
+                {
+                    AST = instrucciones(raiz.ChildNodes.ElementAt(0));
+                }
 
-                //TablaSimbolo global = new TablaSimbolo();
+                TablaSimbolo global = new TablaSimbolo();
 
-                //foreach (Instruccion ins in AST)
-                //{
-                //    ins.ejeuctar(global);
-                //}
+                foreach (Instruccion ins in AST)
+                {
+                    ins.ejeuctar(global);
+                }
 
                 if (MessageBox.Show("Desear graficar el AST", "Confirmacion", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
                 {
@@ -80,7 +80,6 @@ namespace OCL2_Proyecto1_201800586.Analizador
                     return main(actual.ChildNodes.ElementAt(0));
             }
         }
-
         public Instruccion declaraciones(ParseTreeNode actual)
         {
             LinkedList<Instruccion> lista = new LinkedList<Instruccion>();
@@ -196,9 +195,68 @@ namespace OCL2_Proyecto1_201800586.Analizador
             string token = actual.ChildNodes.ElementAt(0).ToString().Split(' ')[0];
             switch (token)
             {
+                case "Asignacion":
+                    return asignar(actual.ChildNodes.ElementAt(0));
+                case "While":
+                    return mientras(actual.ChildNodes.ElementAt(0));
+                case "If":
+                    if(actual.ChildNodes.ElementAt(0).ChildNodes.Count == 4)
+                    {
+                        return IF(actual.ChildNodes.ElementAt(0));
+                    }
+                    else if (actual.ChildNodes.ElementAt(0).ChildNodes.Count == 5)
+                    {
+                        return ELSEIF(actual.ChildNodes.ElementAt(0));
+                    }
+                    else if (actual.ChildNodes.ElementAt(0).ChildNodes.Count == 6)
+                    {
+                        return ELSE(actual.ChildNodes.ElementAt(0));
+                    }
+                    else
+                    {
+                        return ELSEIFELSE(actual.ChildNodes.ElementAt(0));
+                    }
                 default:
                     return imprimir(actual.ChildNodes.ElementAt(0));
             }
+        }
+
+        public Instruccion asignar(ParseTreeNode actual)
+        {
+            return new Asignacion(actual.ChildNodes.ElementAt(0).ToString().Split(' ')[0], expresion(actual.ChildNodes.ElementAt(2)), actual.ChildNodes.ElementAt(0).Token.Location.Line, actual.ChildNodes.ElementAt(0).Token.Location.Column);
+        }
+
+        public Instruccion IF(ParseTreeNode actual)
+        {
+            return new IF(expresion(actual.ChildNodes.ElementAt(1)), sentencias(actual.ChildNodes.ElementAt(3)));
+        }
+
+        public Instruccion ELSEIF(ParseTreeNode actual)
+        {
+            LinkedList<Instruccion> lista = new LinkedList<Instruccion>();
+            foreach(ParseTreeNode nodo in actual.ChildNodes)
+            {
+                lista.AddLast(new IF(expresion(nodo.ChildNodes.ElementAt(2)), sentencias(nodo.ChildNodes.ElementAt(4))));
+            }
+            return new IF(expresion(actual.ChildNodes.ElementAt(1)), sentencias(actual.ChildNodes.ElementAt(3)), null, lista);
+        }
+        public Instruccion ELSE(ParseTreeNode actual)
+        {
+            return new IF(expresion(actual.ChildNodes.ElementAt(1)), sentencias(actual.ChildNodes.ElementAt(3)), sentencias(actual.ChildNodes.ElementAt(5)));
+        }
+
+        public Instruccion ELSEIFELSE(ParseTreeNode actual)
+        {
+            LinkedList<Instruccion> lista = new LinkedList<Instruccion>();
+            foreach (ParseTreeNode nodo in actual.ChildNodes.ElementAt(4).ChildNodes)
+            {
+                lista.AddLast(new IF(expresion(nodo.ChildNodes.ElementAt(2)), sentencias(nodo.ChildNodes.ElementAt(4))));
+            }
+            return new IF(expresion(actual.ChildNodes.ElementAt(1)), sentencias(actual.ChildNodes.ElementAt(3)), sentencias(actual.ChildNodes.ElementAt(6)), lista);
+        }
+        public Instruccion mientras(ParseTreeNode actual)
+        {
+            return new While(expresion(actual.ChildNodes.ElementAt(1)), sentencias(actual.ChildNodes.ElementAt(3)));
         }
         public Instruccion imprimir(ParseTreeNode actual)
         {
@@ -274,12 +332,12 @@ namespace OCL2_Proyecto1_201800586.Analizador
             }
             else
             {
-                return new Operacion(expresion(actual.ChildNodes.ElementAt(1)), Operacion.Tipo.NOT, actual.ChildNodes.ElementAt(1).Token.Location.Line, actual.ChildNodes.ElementAt(1).Token.Location.Column);
+                return new Operacion(expresion(actual.ChildNodes.ElementAt(1)), Operacion.Tipo.NOT, actual.ChildNodes.ElementAt(0).Token.Location.Line, actual.ChildNodes.ElementAt(0).Token.Location.Column);
             }
         }
         public Operacion expresionUnaria(ParseTreeNode actual)
         {
-            return new Operacion(expresion(actual.ChildNodes.ElementAt(1)), Operacion.Tipo.NEGATIVO, actual.ChildNodes.ElementAt(1).Token.Location.Line, actual.ChildNodes.ElementAt(1).Token.Location.Column);
+            return new Operacion(expresion(actual.ChildNodes.ElementAt(1)), Operacion.Tipo.NEGATIVO, actual.ChildNodes.ElementAt(0).Token.Location.Line, actual.ChildNodes.ElementAt(0).Token.Location.Column);
         }
 
         public Operacion expresionRelacional(ParseTreeNode actual)
@@ -306,12 +364,12 @@ namespace OCL2_Proyecto1_201800586.Analizador
             string[] token = hoja.ChildNodes.ElementAt(0).ToString().Split(' ');
             switch (true)
             {
-                case bool _ when Regex.IsMatch(token[0], "^[0-9]+$"):
-                    return new Operacion(int.Parse(token[0]), hoja.ChildNodes.ElementAt(0).Token.Location.Line, hoja.ChildNodes.ElementAt(0).Token.Location.Column);
-                case bool _ when Regex.IsMatch(token[0], "^[0-9]+(\\.[0-9]+)?$"):
-                    return new Operacion(Double.Parse(token[0]), hoja.ChildNodes.ElementAt(0).Token.Location.Line, hoja.ChildNodes.ElementAt(0).Token.Location.Column);
                 case bool _ when Regex.IsMatch(hoja.ChildNodes.ElementAt(0).ToString(), "(Cadena)"):
                     return new Operacion(hoja.ChildNodes.ElementAt(0).ToString().Replace(" (Cadena)", ""), Operacion.Tipo.CADENA, hoja.ChildNodes.ElementAt(0).Token.Location.Line, hoja.ChildNodes.ElementAt(0).Token.Location.Column);
+                case bool _ when Regex.IsMatch(token[0], "^-?[0-9]+$"):
+                    return new Operacion(int.Parse(token[0]), hoja.ChildNodes.ElementAt(0).Token.Location.Line, hoja.ChildNodes.ElementAt(0).Token.Location.Column);
+                case bool _ when Regex.IsMatch(token[0], "^-?[0-9]+(\\.[0-9]+)?$"):
+                    return new Operacion(Double.Parse(token[0]), hoja.ChildNodes.ElementAt(0).Token.Location.Line, hoja.ChildNodes.ElementAt(0).Token.Location.Column);
                 case bool _ when Regex.IsMatch(token[0], "true|false"):
                     return new Operacion(Boolean.Parse(token[0].ToLower()), hoja.ChildNodes.ElementAt(0).Token.Location.Line, hoja.ChildNodes.ElementAt(0).Token.Location.Column);
                 default:
