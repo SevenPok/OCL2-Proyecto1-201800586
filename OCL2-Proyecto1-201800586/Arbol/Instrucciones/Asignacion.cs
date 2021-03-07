@@ -9,7 +9,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
 {
     class Asignacion : Instruccion
     {
-        private String identificador;
+        public String identificador;
         private Operacion valor;
         public int linea { get; set; }
         public int columna { get; set; }

@@ -70,6 +70,8 @@ namespace OCL2_Proyecto1_201800586.Analizador
             var PR_REPEAT = ToTerm("repeat");
             var PR_UNTIL = ToTerm("until");
 
+            var PR_BREAK = ToTerm("break");
+
             var VAR = ToTerm("var");
             var BEGIN = ToTerm("begin");
             var END = ToTerm("end");
@@ -126,6 +128,7 @@ namespace OCL2_Proyecto1_201800586.Analizador
             NonTerminal CASOS = new NonTerminal("Casos");
             NonTerminal CASO = new NonTerminal("Caso");
             NonTerminal DEFAULT = new NonTerminal("Default");
+            NonTerminal DOWHILE = new NonTerminal("Repeat_Until");
             #endregion
 
             #region Gramatica
@@ -156,7 +159,9 @@ namespace OCL2_Proyecto1_201800586.Analizador
                            | IF + PTCOMA
                            | WHILE + PTCOMA
                            | FOR + PTCOMA
-                           | SWITCH + PTCOMA;
+                           | SWITCH + PTCOMA
+                           | DOWHILE + PTCOMA
+                           | PR_BREAK + PTCOMA;
 
             asignacion.Rule = IDENTIFICADOR + DOSPT + IGUAL + expresion;
 
@@ -169,10 +174,13 @@ namespace OCL2_Proyecto1_201800586.Analizador
 
             ELSEIF.Rule = PR_ELSE + PR_IF + expresion + THEN + bloque_sentencia;
 
-            WHILE.Rule = PR_WHILE + expresion + PR_DO + bloque_sentencia
-                       | PR_WHILE + expresion + PR_DOWNTO + bloque_sentencia;
+            WHILE.Rule = PR_WHILE + expresion + PR_DO + bloque_sentencia;
 
-            FOR.Rule = PR_FOR + asignacion + PR_TO + expresion + PR_DO + bloque_sentencia;
+            DOWHILE.Rule = PR_REPEAT + bloque_sentencia + PR_UNTIL + expresion
+                         | PR_REPEAT + bloque_sentencia + PTCOMA + PR_UNTIL + expresion;
+
+            FOR.Rule = PR_FOR + asignacion + PR_TO + expresion + PR_DO + bloque_sentencia
+                     | PR_FOR + asignacion + PR_DOWNTO + expresion + PR_DO + bloque_sentencia;
 
             lista_id.Rule = MakePlusRule(lista_id, COMA, IDENTIFICADOR);
 
@@ -183,11 +191,9 @@ namespace OCL2_Proyecto1_201800586.Analizador
 
             CASOS.Rule = MakePlusRule(CASOS, CASO);
 
-            CASO.Rule = expresion + DOSPT + sentencia
-                      | expresion + DOSPT + bloque_sentencia + PTCOMA;
+            CASO.Rule = expresion + DOSPT + bloque_sentencia + PTCOMA;
 
-            DEFAULT.Rule = PR_ELSE + sentencia
-                         | PR_ELSE + bloque_sentencia
+            DEFAULT.Rule = PR_ELSE + bloque_sentencia
                          | PR_ELSE + bloque_sentencia + PTCOMA
                          | Empty;
 

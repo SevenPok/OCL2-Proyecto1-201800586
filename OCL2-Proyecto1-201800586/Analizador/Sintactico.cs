@@ -193,6 +193,7 @@ namespace OCL2_Proyecto1_201800586.Analizador
         public Instruccion sentencia(ParseTreeNode actual)
         {
             string token = actual.ChildNodes.ElementAt(0).ToString().Split(' ')[0];
+            //if(token.ToLower() == "else") token = actual.ChildNodes.ElementAt(1).ToString().Split(' ')[0];
             switch (token)
             {
                 case "Asignacion":
@@ -216,11 +217,24 @@ namespace OCL2_Proyecto1_201800586.Analizador
                     {
                         return ELSEIFELSE(actual.ChildNodes.ElementAt(0));
                     }
+                case "Switch":
+                    return Switch(actual.ChildNodes.ElementAt(0));
+                case "For":
+                    return para(actual.ChildNodes.ElementAt(0));
                 default:
                     return imprimir(actual.ChildNodes.ElementAt(0));
             }
         }
 
+        public Instruccion para(ParseTreeNode actual)
+        {
+            string token = actual.ChildNodes.ElementAt(2).ToString().Split(' ')[0];
+            if(token.ToLower() == "to")
+            {
+                return new FOR((Asignacion)asignar(actual.ChildNodes.ElementAt(1)), expresion(actual.ChildNodes.ElementAt(1).ChildNodes.ElementAt(2)), expresion(actual.ChildNodes.ElementAt(3)), 1, sentencias(actual.ChildNodes.ElementAt(5)), actual.ChildNodes.ElementAt(0).Token.Location.Line, actual.ChildNodes.ElementAt(0).Token.Location.Column);
+            }
+            return new FOR((Asignacion)asignar(actual.ChildNodes.ElementAt(1)), expresion(actual.ChildNodes.ElementAt(1).ChildNodes.ElementAt(2)), expresion(actual.ChildNodes.ElementAt(3)), -1, sentencias(actual.ChildNodes.ElementAt(5)), actual.ChildNodes.ElementAt(0).Token.Location.Line, actual.ChildNodes.ElementAt(0).Token.Location.Column);
+        }
         public Instruccion asignar(ParseTreeNode actual)
         {
             return new Asignacion(actual.ChildNodes.ElementAt(0).ToString().Split(' ')[0], expresion(actual.ChildNodes.ElementAt(2)), actual.ChildNodes.ElementAt(0).Token.Location.Line, actual.ChildNodes.ElementAt(0).Token.Location.Column);
@@ -268,6 +282,29 @@ namespace OCL2_Proyecto1_201800586.Analizador
                 default:
                     return new Imprimir(listaExpresion(actual.ChildNodes.ElementAt(1)), "");
             }
+        }
+
+        public Instruccion Switch(ParseTreeNode actual)
+        {
+            if(actual.ChildNodes.ElementAt(4).ChildNodes.Count > 0){
+                return new SWITCH(expresion(actual.ChildNodes.ElementAt(1)), listaCasos(actual.ChildNodes.ElementAt(3)), Default(actual.ChildNodes.ElementAt(4)), actual.ChildNodes.ElementAt(0).Token.Location.Line, actual.ChildNodes.ElementAt(0).Token.Location.Column);
+            }
+            return new SWITCH(expresion(actual.ChildNodes.ElementAt(1)), listaCasos(actual.ChildNodes.ElementAt(3)), null, actual.ChildNodes.ElementAt(0).Token.Location.Line, actual.ChildNodes.ElementAt(0).Token.Location.Column);
+        }
+
+        public LinkedList<Caso> listaCasos(ParseTreeNode actual)
+        {
+            LinkedList<Caso> lista = new LinkedList<Caso>();
+            foreach(ParseTreeNode nodo in actual.ChildNodes)
+            {
+                lista.AddLast(new Caso(expresion(nodo.ChildNodes.ElementAt(0)), sentencias(nodo.ChildNodes.ElementAt(1))));
+            }
+            return lista;
+        }
+
+        public LinkedList<Instruccion> Default(ParseTreeNode actual)
+        {
+            return sentencias(actual.ChildNodes.ElementAt(1));
         }
         public LinkedList<Instruccion> listaExpresion(ParseTreeNode actual)
         {

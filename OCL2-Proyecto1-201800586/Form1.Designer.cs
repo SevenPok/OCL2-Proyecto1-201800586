@@ -36,9 +36,9 @@ namespace OCL2_Proyecto1_201800586
             // 
             // contenido
             // 
-            this.contenido.Location = new System.Drawing.Point(12, 68);
+            this.contenido.Location = new System.Drawing.Point(12, 62);
             this.contenido.Name = "contenido";
-            this.contenido.Size = new System.Drawing.Size(967, 175);
+            this.contenido.Size = new System.Drawing.Size(967, 252);
             this.contenido.TabIndex = 1;
             this.contenido.Text = "";
             // 
@@ -54,6 +54,8 @@ namespace OCL2_Proyecto1_201800586
             // 
             // richtextbox1
             // 
+            this.richtextbox1.BackColor = System.Drawing.SystemColors.InfoText;
+            this.richtextbox1.ForeColor = System.Drawing.SystemColors.Menu;
             this.richtextbox1.Location = new System.Drawing.Point(12, 341);
             this.richtextbox1.Name = "richtextbox1";
             this.richtextbox1.Size = new System.Drawing.Size(967, 175);
