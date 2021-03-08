@@ -200,6 +200,8 @@ namespace OCL2_Proyecto1_201800586.Analizador
                     return asignar(actual.ChildNodes.ElementAt(0));
                 case "While":
                     return mientras(actual.ChildNodes.ElementAt(0));
+                case "Repeat_Until":
+                    return hacerMientras(actual.ChildNodes.ElementAt(0));
                 case "If":
                     if(actual.ChildNodes.ElementAt(0).ChildNodes.Count == 4)
                     {
@@ -271,6 +273,11 @@ namespace OCL2_Proyecto1_201800586.Analizador
         public Instruccion mientras(ParseTreeNode actual)
         {
             return new While(expresion(actual.ChildNodes.ElementAt(1)), sentencias(actual.ChildNodes.ElementAt(3)));
+        }
+
+        public Instruccion hacerMientras(ParseTreeNode actual)
+        {
+            return new DoWhile(sentencias(actual.ChildNodes.ElementAt(1)), expresion(actual.ChildNodes.ElementAt(3)), actual.ChildNodes.ElementAt(0).Token.Location.Line, actual.ChildNodes.ElementAt(0).Token.Location.Column);
         }
         public Instruccion imprimir(ParseTreeNode actual)
         {
