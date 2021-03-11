@@ -4,13 +4,24 @@ using System.Text;
 
 namespace OCL2_Proyecto1_201800586.Arbol.Valores
 {
-    class TablaSimbolo : LinkedList<Simbolo>
+    class TablaSimbolo : LinkedList<Simbolo>, ICloneable
     {
         public TablaSimbolo(): base()
         {
 
         }
 
+        public Simbolo getSimbolo(String identificador)
+        {
+            foreach (Simbolo s in this)
+            {
+                if (s.Identificador.Equals(identificador))
+                {
+                    return s;
+                }
+            }
+            return null; 
+        }
         public Boolean existe(String identificador)
         {
             foreach (Simbolo s in this)
@@ -20,7 +31,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                     return true;
                 }
             }
-            Form1.consola.Text += "La variable '" + identificador + "' es desconocida\n";
+            //Form1.consola.Text += "La variable '" + identificador + "' es desconocida\n";
             return false;
         }
 
@@ -33,7 +44,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                     return s.Valor;
                 }
             }
-            Form1.consola.Text += "La variable '" + identificador + "' es desconocida\n";
+            //Form1.consola.Text += "La variable '" + identificador + "' es desconocida\n";
             return null;
         }
 
@@ -46,7 +57,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                     return s.type;
                 }
             }
-            Form1.consola.Text += "La variable '" + identificador + "' es desconocida\n";
+            //Form1.consola.Text += "La variable '" + identificador + "' es desconocida\n";
             return Simbolo.Tipo.DESCONOCIDO;
         }
 
@@ -74,6 +85,16 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
             }
             Form1.consola.Text += "La variable " + identificador + " no existe en este ámbito, por lo "
                     + "que no puede asignársele un valor.\n";
+        }
+
+        public object Clone()
+        {
+            TablaSimbolo nueva = new TablaSimbolo();
+            foreach(Simbolo s in this)
+            {
+                nueva.AddLast((Simbolo)s.Clone());
+            }
+            return nueva;
         }
     }
 }

@@ -1,11 +1,12 @@
-﻿using OCL2_Proyecto1_201800586.Arbol.Interfaces;
+﻿using OCL2_Proyecto1_201800586.Arbol.Instrucciones;
+using OCL2_Proyecto1_201800586.Arbol.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace OCL2_Proyecto1_201800586.Arbol.Valores
 {
-    class Operacion : Instruccion
+    internal class Operacion : Instruccion, ICloneable
     {
         public enum Tipo
         {
@@ -30,11 +31,16 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
             DECIMAL,
             IDENTIFICADOR,
             BOOLEANA,
+            OBJETO,
+            FUNCION,
+            DESCONOCIDO
         }
         public Tipo tipo;
         private Operacion izquierda;
         private Operacion derecha;
         public Object valor;
+        private CallAtributo atributo;
+        public LLamadaFuncion llamada;
 
         public int linea { get ; set ; }
         public int columna { get ; set ; }
@@ -84,6 +90,22 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
         {
             this.valor = valor;
             this.tipo = Tipo.ENTERO;
+            this.linea = linea + 1;
+            this.columna = columna + 1;
+        }
+
+        public Operacion(CallAtributo atributo, int linea, int columna)
+        {
+            this.atributo = atributo;
+            this.tipo = Tipo.OBJETO;
+            this.linea = linea + 1;
+            this.columna = columna + 1;
+        }
+
+        public Operacion(LLamadaFuncion llamada, int linea, int columna)
+        {
+            this.llamada = llamada;
+            this.tipo = Tipo.FUNCION;
             this.linea = linea + 1;
             this.columna = columna + 1;
         }
@@ -174,11 +196,26 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                     {
                         return ts.getValor(valor.ToString());
                     }
+                    Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El identificador '" + valor.ToString() + "' es desconocido.\n";
                     return null;
                 case Tipo.CADENA:
                     return valor.ToString();
                 case Tipo.BOOLEANA:
                     return Boolean.Parse(valor.ToString());
+                case Tipo.OBJETO:
+                    if (atributo.ejeuctar(ts) != null)
+                    {
+                        return atributo.ejeuctar(ts);
+                    }
+                    return null;
+                case Tipo.FUNCION:
+                    Object o = llamada.ejeuctar(ts);
+                    if (o != null)
+                    {
+                        return o; 
+                    }
+                    Form1.consola.Text += "Linea: " + linea + " Columna: " + linea + " La funcion '" + llamada.identificador + "' no devuelve ningun valor.\n";
+                    return null;
                 case Tipo.MAYOR:
                     left = izquierda.ejeuctar(ts);
                     right = derecha.ejeuctar(ts);
@@ -277,6 +314,11 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                     return null;
             }
            
+        }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
         }
     }
 }

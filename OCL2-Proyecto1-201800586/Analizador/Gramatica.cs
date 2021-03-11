@@ -83,6 +83,14 @@ namespace OCL2_Proyecto1_201800586.Analizador
             var BOOLEAN = ToTerm("boolean");
             var VOID = ToTerm("void");
 
+            var CONST = ToTerm("const");
+
+            var TYPE = ToTerm("type");
+            var PR_OBJECT = ToTerm("object");
+
+            var PR_PROCEDURE = ToTerm("procedure");
+            var PR_FUNCTION = ToTerm("function");
+
             RegisterOperators(1, Associativity.Left, OR);
             RegisterOperators(2, Associativity.Left, AND);
             RegisterOperators(3, Associativity.Left, IGUAL, DIFERENTE);
@@ -129,6 +137,20 @@ namespace OCL2_Proyecto1_201800586.Analizador
             NonTerminal CASO = new NonTerminal("Caso");
             NonTerminal DEFAULT = new NonTerminal("Default");
             NonTerminal DOWHILE = new NonTerminal("Repeat_Until");
+            NonTerminal OBJETO = new NonTerminal("Objeto");
+            NonTerminal ATRIBUTO = new NonTerminal("Atributo");
+            NonTerminal ATRIBUTOS = new NonTerminal("Atributos");
+            NonTerminal CALLOBJETO = new NonTerminal("Call_Objeto");
+            NonTerminal CALLFuncion = new NonTerminal("Call_Funcion");
+            NonTerminal ASIGNARATRIBUTO = new NonTerminal("Asignar_Atributo");
+            NonTerminal procedimiento = new NonTerminal("Procedimiento");
+            NonTerminal parametros = new NonTerminal("Parametros");
+            NonTerminal parametro = new NonTerminal("Parametro");
+            NonTerminal callparametro = new NonTerminal("Call_Parametro");
+            NonTerminal funcion = new NonTerminal("Funcion");
+            NonTerminal instruccioneslocales = new NonTerminal("instrucciones_locales");
+            NonTerminal instruccionlocal = new NonTerminal("instruccion_local");
+            NonTerminal constante = new NonTerminal("Constante");
             #endregion
 
             #region Gramatica
@@ -137,10 +159,32 @@ namespace OCL2_Proyecto1_201800586.Analizador
             instrucciones.Rule = MakePlusRule(instrucciones, instruccion);
 
             instruccion.Rule = declaracion + PTCOMA
+                             | OBJETO + PTCOMA
+                             | funcion + PTCOMA
+                             | constante + PTCOMA
+                             | procedimiento + PTCOMA
                              | main;
+
 
             programa.Rule = PROGRAM + IDENTIFICADOR + PTCOMA
                           | Empty;
+
+            funcion.Rule = PR_FUNCTION + IDENTIFICADOR + PARIZQ + parametros + PARDER + DOSPT + tipo + PTCOMA + instruccioneslocales + bloque_sentencia;
+
+            procedimiento.Rule = PR_PROCEDURE + IDENTIFICADOR + PARIZQ + parametros + PARDER + PTCOMA + instruccioneslocales + bloque_sentencia;
+
+            instruccioneslocales.Rule = MakeStarRule(instruccioneslocales, instruccionlocal);
+
+            instruccionlocal.Rule = declaracion + PTCOMA
+                                  | OBJETO + PTCOMA
+                                  | constante + PTCOMA
+                                  | funcion + PTCOMA
+                                  | procedimiento + PTCOMA;
+
+            parametros.Rule = MakeStarRule(parametros, PTCOMA, parametro);
+
+            parametro.Rule = VAR + lista_id + DOSPT + tipo
+                           | lista_id + DOSPT + tipo;
 
             main.Rule = bloque_sentencia + PUNTO;
 
@@ -150,20 +194,26 @@ namespace OCL2_Proyecto1_201800586.Analizador
             declaracion_compuesta.Rule = IGUAL + expresion
                                        | Empty;
 
+            constante.Rule = CONST + IDENTIFICADOR + IGUAL + expresion;
+
             bloque_sentencia.Rule = BEGIN + sentencias + END;
 
             sentencias.Rule = MakeStarRule(sentencias, sentencia);
 
             sentencia.Rule = imprimir + PTCOMA
                            | asignacion + PTCOMA
+                           | ASIGNARATRIBUTO + PTCOMA
                            | IF + PTCOMA
                            | WHILE + PTCOMA
                            | FOR + PTCOMA
                            | SWITCH + PTCOMA
                            | DOWHILE + PTCOMA
+                           | CALLFuncion + PTCOMA
                            | PR_BREAK + PTCOMA;
 
             asignacion.Rule = IDENTIFICADOR + DOSPT + IGUAL + expresion;
+
+            ASIGNARATRIBUTO.Rule = IDENTIFICADOR + PUNTO + IDENTIFICADOR + DOSPT + IGUAL + expresion;
 
             IF.Rule = PR_IF + expresion + THEN + bloque_sentencia
                     | PR_IF + expresion + THEN + bloque_sentencia + PR_ELSE + bloque_sentencia
@@ -197,9 +247,17 @@ namespace OCL2_Proyecto1_201800586.Analizador
                          | PR_ELSE + bloque_sentencia + PTCOMA
                          | Empty;
 
+            OBJETO.Rule = TYPE + IDENTIFICADOR + IGUAL + PR_OBJECT + VAR + ATRIBUTOS + END;
+
+            ATRIBUTOS.Rule = MakeStarRule(ATRIBUTOS, ATRIBUTO);
+
+            ATRIBUTO.Rule = lista_id + DOSPT + tipo + PTCOMA;
+
             lista_expresion.Rule = MakeStarRule(lista_expresion, COMA, expresion);
 
             expresion.Rule = primitiva
+                           | CALLOBJETO
+                           | CALLFuncion
                            | expresion_unaria
                            | expresion_numerica
                            | expresion_relacional
@@ -220,7 +278,8 @@ namespace OCL2_Proyecto1_201800586.Analizador
                                       | expresion + MENOR + expresion
                                       | expresion + IGUAL + expresion
                                       | expresion + DIFERENTE + expresion
-                                      | expresion + MAYORIGUAL + expresion;
+                                      | expresion + MAYORIGUAL + expresion
+                                      | expresion + MENORIGUAL + expresion;
 
             expresion_unaria.Rule = MENOS + expresion;
 
@@ -231,10 +290,17 @@ namespace OCL2_Proyecto1_201800586.Analizador
                            | FALSE
                            | IDENTIFICADOR;
 
+            CALLOBJETO.Rule = IDENTIFICADOR + PUNTO + IDENTIFICADOR;
+
+            CALLFuncion.Rule = IDENTIFICADOR + PARIZQ + callparametro + PARDER;
+
+            callparametro.Rule = MakeStarRule(callparametro, COMA, expresion);
+
             tipo.Rule = STRING
                       | INTEGER
                       | REAL
-                      | BOOLEAN;
+                      | BOOLEAN
+                      | IDENTIFICADOR;
 
             #endregion
 
