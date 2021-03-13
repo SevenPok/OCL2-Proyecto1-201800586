@@ -36,7 +36,12 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                     }
                     foreach (Instruccion ins in sentencias)
                     {
-                        ins.ejeuctar(tablaLocal);
+                        Object o = ins.ejeuctar(tablaLocal);
+                        if (o != null && o.GetType().Equals(typeof(Break)))
+                        {
+                            return null;
+                        }
+                        
                     }
                 } while (!(Boolean)condicion.ejeuctar(ts));
             }

@@ -14,6 +14,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
         public String identificador { get; set; }
         public Simbolo.Tipo tipo { get; set; }
 
+
         public Parametro(String identificador, Simbolo.Tipo tipo, int line, int columna)
         {
             this.identificador = identificador;

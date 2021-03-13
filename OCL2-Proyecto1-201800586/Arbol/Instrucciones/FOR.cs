@@ -47,7 +47,11 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                                 ts.setValor(asignar.identificador, i);
                                 foreach (Instruccion sentencia in instrucciones)
                                 {
-                                    sentencia.ejeuctar(ts);
+                                    Object o = sentencia.ejeuctar(ts);
+                                    if (o != null && o.GetType().Equals(typeof(Break)))
+                                    {
+                                        return null;
+                                    }
                                 }
                             }
                         }
@@ -65,7 +69,12 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                                 ts.setValor(asignar.identificador, i);
                                 foreach (Instruccion sentencia in instrucciones)
                                 {
-                                    sentencia.ejeuctar(ts);
+                                    Object o = sentencia.ejeuctar(ts);
+                                    if (o != null && o.GetType().Equals(typeof(Break)))
+                                    {
+                                        return null;
+                                    }
+                                    
                                 }
                             }
                         }

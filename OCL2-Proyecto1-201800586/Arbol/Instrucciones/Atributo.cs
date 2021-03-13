@@ -1,4 +1,5 @@
-﻿using OCL2_Proyecto1_201800586.Arbol.Interfaces;
+﻿using OCL2_Proyecto1_201800586.Analizador;
+using OCL2_Proyecto1_201800586.Arbol.Interfaces;
 using OCL2_Proyecto1_201800586.Arbol.Valores;
 using System;
 using System.Collections.Generic;
@@ -11,12 +12,14 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
         public int linea { get ; set ; }
         public int columna { get ; set ; }
 
-        private String identificador;
+        public String identificador;
+        public String objeto;
         private Simbolo.Tipo tipo;
 
-        public Atributo(String identificador, Simbolo.Tipo tipo, int linea, int columna)
+        public Atributo(String identificador, String objeto, Simbolo.Tipo tipo, int linea, int columna)
         {
             this.identificador = identificador;
+            this.objeto = objeto;
             this.tipo = tipo;
             this.linea = linea;
             this.columna = columna;
@@ -31,7 +34,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
         {
             if (tipo == Simbolo.Tipo.ENTERO)
             {
-                return new Simbolo(identificador, tipo, 0, linea, columna, "global");
+                return new Simbolo(identificador, tipo, (Double)0, linea, columna, "global");
             }
             else if (tipo == Simbolo.Tipo.DECIMAL)
             {

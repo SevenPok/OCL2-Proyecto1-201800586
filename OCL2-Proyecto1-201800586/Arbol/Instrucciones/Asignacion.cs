@@ -100,22 +100,22 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                         {
                             if (Regex.IsMatch(aux.ToString(), "^-?[0-9]+$") && atributos.getTipo(atributo) == Simbolo.Tipo.ENTERO)
                             {
-                                atributos.setValor(atributo, aux);
+                                atributos.setValor(atributo, (Double)aux);
                                 return true;
                             }
                             else if (aux.GetType().Equals(typeof(Double)) && atributos.getTipo(atributo) == Simbolo.Tipo.DECIMAL)
                             {
-                                atributos.setValor(atributo, aux);
+                                atributos.setValor(atributo, (Double)aux);
                                 return true;
                             }
                             else if (aux.GetType().Equals(typeof(String)) && atributos.getTipo(atributo) == Simbolo.Tipo.CADENA)
                             {
-                                atributos.setValor(atributo, aux);
+                                atributos.setValor(atributo, (String)aux);
                                 return true;
                             }
                             else if (aux.GetType().Equals(typeof(Boolean)) && atributos.getTipo(atributo) == Simbolo.Tipo.BOOLEANA)
                             {
-                                atributos.setValor(atributo, aux);
+                                atributos.setValor(atributo, (Boolean)aux);
                                 return true;
                             }
 

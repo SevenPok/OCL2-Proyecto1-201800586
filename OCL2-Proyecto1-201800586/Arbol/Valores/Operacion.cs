@@ -203,9 +203,10 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                 case Tipo.BOOLEANA:
                     return Boolean.Parse(valor.ToString());
                 case Tipo.OBJETO:
-                    if (atributo.ejeuctar(ts) != null)
+                    Object ob = atributo.ejeuctar(ts);
+                    if (ob != null)
                     {
-                        return atributo.ejeuctar(ts);
+                        return ob;
                     }
                     return null;
                 case Tipo.FUNCION:

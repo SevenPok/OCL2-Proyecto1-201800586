@@ -53,6 +53,10 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
 
                     foreach (Instruccion ins in instruccionesIf)
                     {
+                        if(ins.GetType().Equals(typeof(Break)))
+                        {
+                            return new Break(0, 0); ;
+                        }
                         ins.ejeuctar(tablaLocal);
                     }
                     return true;
@@ -84,6 +88,10 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                         }
                         foreach (Instruccion ins in instruccionesElse)
                         {
+                            if (ins.GetType().Equals(typeof(Break)))
+                            {
+                                return new Break(0,0);
+                            }
                             ins.ejeuctar(tablaLocal);
                         }
                         return true;

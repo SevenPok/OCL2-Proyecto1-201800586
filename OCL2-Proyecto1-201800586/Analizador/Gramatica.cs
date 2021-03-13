@@ -71,6 +71,7 @@ namespace OCL2_Proyecto1_201800586.Analizador
             var PR_UNTIL = ToTerm("until");
 
             var PR_BREAK = ToTerm("break");
+            var PR_CONTINUE = ToTerm("continue");
 
             var VAR = ToTerm("var");
             var BEGIN = ToTerm("begin");
@@ -151,6 +152,8 @@ namespace OCL2_Proyecto1_201800586.Analizador
             NonTerminal instruccioneslocales = new NonTerminal("instrucciones_locales");
             NonTerminal instruccionlocal = new NonTerminal("instruccion_local");
             NonTerminal constante = new NonTerminal("Constante");
+            NonTerminal accsesos = new NonTerminal("Accesos");
+            NonTerminal accseso = new NonTerminal("Acceso");
             #endregion
 
             #region Gramatica
@@ -209,11 +212,12 @@ namespace OCL2_Proyecto1_201800586.Analizador
                            | SWITCH + PTCOMA
                            | DOWHILE + PTCOMA
                            | CALLFuncion + PTCOMA
-                           | PR_BREAK + PTCOMA;
+                           | PR_BREAK + PTCOMA
+                           | PR_CONTINUE + PTCOMA   ;
 
             asignacion.Rule = IDENTIFICADOR + DOSPT + IGUAL + expresion;
 
-            ASIGNARATRIBUTO.Rule = IDENTIFICADOR + PUNTO + IDENTIFICADOR + DOSPT + IGUAL + expresion;
+            ASIGNARATRIBUTO.Rule = CALLOBJETO + DOSPT + IGUAL + expresion;
 
             IF.Rule = PR_IF + expresion + THEN + bloque_sentencia
                     | PR_IF + expresion + THEN + bloque_sentencia + PR_ELSE + bloque_sentencia
@@ -290,7 +294,11 @@ namespace OCL2_Proyecto1_201800586.Analizador
                            | FALSE
                            | IDENTIFICADOR;
 
-            CALLOBJETO.Rule = IDENTIFICADOR + PUNTO + IDENTIFICADOR;
+            CALLOBJETO.Rule = IDENTIFICADOR + accsesos;
+
+            accsesos.Rule = MakePlusRule(accsesos, accseso);
+
+            accseso.Rule = PUNTO + IDENTIFICADOR;
 
             CALLFuncion.Rule = IDENTIFICADOR + PARIZQ + callparametro + PARDER;
 
@@ -306,8 +314,8 @@ namespace OCL2_Proyecto1_201800586.Analizador
 
             #region Preferencias
             this.Root = ini;
-            this.MarkTransient(declaracion_compuesta, bloque_sentencia, tipo);
-            this.MarkPunctuation(PTCOMA, PARDER, PARIZQ, COMA, DOSPT, PUNTO, BEGIN, END, VAR);
+            this.MarkTransient(declaracion_compuesta, bloque_sentencia, tipo, accseso);
+            this.MarkPunctuation(PTCOMA, PARDER, PARIZQ, COMA, DOSPT, PUNTO, BEGIN, END);
             #endregion
         }
     }

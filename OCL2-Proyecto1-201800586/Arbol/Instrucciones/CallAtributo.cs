@@ -12,12 +12,12 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
         public int columna { get ; set ; }
 
         public String identificador;
-        public String atributo;
+        public LinkedList<String> atributos;
 
-        public CallAtributo(String identificador, String atributo, int linea, int columna)
+        public CallAtributo(String identificador, LinkedList<String> atributos, int linea, int columna)
         {
             this.identificador = identificador;
-            this.atributo = atributo;
+            this.atributos = atributos;
             this.linea = linea;
             this.columna = columna;
         }
@@ -25,14 +25,38 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
         {
             if (ts.existe(identificador) && ts.getTipo(identificador) == Simbolo.Tipo.OBJETO)
             {
-                TablaSimbolo atributos = (TablaSimbolo)ts.getValor(identificador);
-                if (atributos.existe(atributo))
+                TablaSimbolo local = (TablaSimbolo)ts.getValor(identificador);
+                int i = 1;
+                foreach(String atributo in atributos)
                 {
-                    return atributos.getValor(atributo);
-                }
-                else
-                {
-                    Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El atributo '" + atributo + "' no existe\n";
+                    if (local.existe(atributo))
+                    {
+                        Object o = local.getValor(atributo);
+                        //Form1.consola.Text += o + "\n";
+                        if (o is TablaSimbolo)
+                        {
+                            local = (TablaSimbolo)o;
+                            if(i == atributos.Count)
+                            {
+                                return local;
+                            }
+                        }
+                        else if (i == atributos.Count)
+                        {
+                            return o;
+                        }
+                        else
+                        {
+                            Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El tributo '" + atributo + "' no es de tipo objeto para acceder a sus atributos\n";
+                            return null;
+                        }
+                    }
+                    else
+                    {
+                        Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El tributo '" + atributo + "' no esta declarado\n";
+                        return null;
+                    }
+                    i++;
                 }
             }
             else

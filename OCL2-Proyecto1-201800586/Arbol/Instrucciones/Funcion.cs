@@ -73,15 +73,26 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
 
         public object llamar(TablaSimbolo ts, LinkedList<Operacion> operaciones)
         {
+            
             if (parametros.Count == operaciones.Count)
             {
                 TablaSimbolo local = new TablaSimbolo();
                 local.AddLast(ts.getSimbolo(identificador));
                 ArrayList ides = new ArrayList();
+                LinkedList<String> referncias = new LinkedList<string>();
+                LinkedList<String> refernciasParametros = new LinkedList<string>();
+                LinkedList<int> posicion = new LinkedList<int>();
+                int i = 0;
                 foreach (Declaracion declaracion in parametros)
                 {
                     ides.Add(declaracion);
                     declaracion.ejeuctar(local);
+                    if (declaracion.referencia)
+                    {
+                        referncias.AddLast(declaracion.identificador);
+                        posicion.AddLast(i);
+                    }
+                    i++;
                 }
                 int contador = 0;
                 foreach (Operacion operacion in operaciones)
@@ -91,20 +102,41 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                     {
                         if (Regex.IsMatch(valor.ToString(), "^-?[0-9]+$") && ((Declaracion)ides[contador]).tipo == Simbolo.Tipo.ENTERO)
                         {
-                            local.setValor(((Declaracion)ides[contador]).identificador, valor);
+                            local.setValor(((Declaracion)ides[contador]).identificador, (Double)valor);
                         }
                         else if (valor.GetType().Equals(typeof(Double)) && ((Declaracion)ides[contador]).tipo == Simbolo.Tipo.DECIMAL || ((Declaracion)ides[contador]).tipo == Simbolo.Tipo.ENTERO)
                         {
-                            local.setValor(((Declaracion)ides[contador]).identificador, valor);
+                            local.setValor(((Declaracion)ides[contador]).identificador, (Double)valor);
                         }
-                        else if (valor.GetType().Equals(typeof(Boolean)) && ((Declaracion)ides[contador]).tipo == Simbolo.Tipo.ENTERO)
+                        else if (valor.GetType().Equals(typeof(Boolean)) && ((Declaracion)ides[contador]).tipo == Simbolo.Tipo.BOOLEANA)
                         {
-                            local.setValor(((Declaracion)ides[contador]).identificador, valor);
+                            local.setValor(((Declaracion)ides[contador]).identificador, (Boolean)valor);
                         }
-                        else if (valor.GetType().Equals(typeof(String)) && ((Declaracion)ides[contador]).tipo == Simbolo.Tipo.ENTERO)
+                        else if (valor.GetType().Equals(typeof(String)) && ((Declaracion)ides[contador]).tipo == Simbolo.Tipo.CADENA)
                         {
-                            local.setValor(((Declaracion)ides[contador]).identificador, valor);
+                            local.setValor(((Declaracion)ides[contador]).identificador, (string)valor);
                         }
+
+
+
+                        foreach (int pos in posicion)
+                        {
+                            if (pos == contador)
+                            {
+                                if (operacion.tipo == Operacion.Tipo.IDENTIFICADOR)
+                                {
+                                    //Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " referencia a: " + operacion.valor.ToString() + "\n";
+                                    refernciasParametros.AddLast(operacion.valor.ToString());
+                                }
+                                else
+                                {
+                                    Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " No se hizo referencia a un identificador.\n";
+                                    return null;
+                                }
+                                  
+                            }
+                        }
+                        
                     }
                     else
                     {
@@ -133,6 +165,14 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                 }
 
                 ts.setValor(identificador, local.getValor(identificador));
+
+                foreach (String r in refernciasParametros)
+                {
+                    Object o = local.getValor(referncias.First.Value);
+                   // Form1.consola.Text+= referncias.First.Value.ToString()+"/n";
+                    ts.setValor(r, o);
+                    referncias.RemoveFirst();
+                }
 
                 return local.getValor(identificador);
             }

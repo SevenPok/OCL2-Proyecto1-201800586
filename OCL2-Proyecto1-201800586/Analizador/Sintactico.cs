@@ -16,6 +16,7 @@ namespace OCL2_Proyecto1_201800586.Analizador
     class Sintactico : Grammar
     {
         public static LinkedList<Funcion> funciones = new LinkedList<Funcion>();
+        public static LinkedList<Objeto> objetos = new LinkedList<Objeto>();
         public bool analizar(String cadena)
         {
             Gramatica gramatica = new Gramatica();
@@ -28,7 +29,7 @@ namespace OCL2_Proyecto1_201800586.Analizador
             {
                 Form1.consola.Text = "";
                 LinkedList<Instruccion> AST;
-                
+
                 if (raiz.ChildNodes.Count >= 1)
                 {
                     AST = instrucciones(raiz.ChildNodes.ElementAt(1));
@@ -51,6 +52,7 @@ namespace OCL2_Proyecto1_201800586.Analizador
                     grafo.graficar(generarGrafo(raiz));
                 }
                 funciones.Clear();
+                objetos.Clear();
                 //Form1.consola.Text += "\nLa lisata tiene: " + funciones.Count.ToString();
                 return true;
             }
@@ -86,9 +88,16 @@ namespace OCL2_Proyecto1_201800586.Analizador
                     return funcion(actual.ChildNodes.ElementAt(0));
                 case "Declaracion":
                     return declaraciones(actual.ChildNodes.ElementAt(0));
+                case "Constante":
+                    return constante(actual.ChildNodes.ElementAt(0));
                 default:
                     return main(actual.ChildNodes.ElementAt(0));
             }
+        }
+
+        public Constante constante(ParseTreeNode actual)
+        {
+            return new Constante(actual.ChildNodes[1].Token.Text, expresion(actual.ChildNodes[3]), actual.ChildNodes[1].Token.Location.Line, actual.ChildNodes[1].Token.Location.Column);
         }
 
         public Instruccion funcion(ParseTreeNode actual)
@@ -120,10 +129,23 @@ namespace OCL2_Proyecto1_201800586.Analizador
             LinkedList<Declaracion> declaracions = new LinkedList<Declaracion>();
             foreach (ParseTreeNode nodo in actual.ChildNodes)
             {
-                string tipo = nodo.ChildNodes[1].Token.Text;
-                foreach(ParseTreeNode hijo in nodo.ChildNodes[0].ChildNodes)
+                if (nodo.ChildNodes.Count == 2)
                 {
-                    declaracions.AddLast(new Declaracion(hijo.Token.Text, tipoVariable(tipo), hijo.Token.Location.Line, hijo.Token.Location.Column));
+                    string tipo = nodo.ChildNodes[1].Token.Text;
+                    foreach (ParseTreeNode hijo in nodo.ChildNodes[0].ChildNodes)
+                    {
+                        declaracions.AddLast(new Declaracion(hijo.Token.Text, tipoVariable(tipo), hijo.Token.Location.Line, hijo.Token.Location.Column));
+                    }
+                }
+                else
+                {
+                    string tipo = nodo.ChildNodes[2].Token.Text;
+                    foreach (ParseTreeNode hijo in nodo.ChildNodes[1].ChildNodes)
+                    {
+                        Declaracion referencia = new Declaracion(hijo.Token.Text, tipoVariable(tipo), hijo.Token.Location.Line, hijo.Token.Location.Column);
+                        referencia.referencia = true;
+                        declaracions.AddLast(referencia);
+                    }
                 }
             }
             return declaracions;
@@ -134,22 +156,6 @@ namespace OCL2_Proyecto1_201800586.Analizador
         {
 
             LLamadaFuncion aux = new LLamadaFuncion(actual.ChildNodes[0].Token.Text, listaOperacion(actual.ChildNodes.ElementAt(1)), actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
-
-            //foreach (Funcion f in funciones)
-            //{
-            //    if (f.identificador == actual.ChildNodes[0].Token.Text)
-            //    {
-            //        //f.operaciones.Clear();
-            //        aux.funcion = (Funcion)f.Clone();
-            //        //aux.funcion.operaciones.Clear();
-            //        //foreach (ParseTreeNode nodo in actual.ChildNodes[1].ChildNodes)
-            //        //{
-            //        //    aux.funcion.operaciones.AddLast((Operacion)expresion(nodo).Clone());
-            //        //}
-            //        aux.funcion.operaciones = listaOperacion(actual.ChildNodes.ElementAt(1));
-            //        return new Operacion(aux, actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
-            //    }
-            //}
             return new Operacion(aux, actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
 
         }
@@ -164,22 +170,6 @@ namespace OCL2_Proyecto1_201800586.Analizador
             }
             return lista;
         }
-        //    foreach (Funcion f in funciones)
-        //    {
-        //        if(f.identificador == actual.ChildNodes[0].Token.Text)
-        //        {
-        //            return new Operacion(new CallFuncion(actual.ChildNodes[0].Token.Text, lista, f, actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column), actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
-        //        }
-        //    }
-        //    return new Operacion(new CallFuncion(actual.ChildNodes[0].Token.Text, lista.Last(), actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column), actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
-        //}
-
-        //public Instruccion funcion(ParseTreeNode actual)
-        //{
-        //    Funcion aux = new Funcion(actual.ChildNodes[1].Token.Text, parametros(actual.ChildNodes.ElementAt(2)), null, sentencias(actual.ChildNodes.ElementAt(5)), tipoVariable(actual.ChildNodes[3].Token.Text), actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
-        //    funciones.AddLast(aux);
-        //    return aux;
-        //}
 
         public LinkedList<Parametro> parametros(ParseTreeNode actual)
         {
@@ -196,91 +186,62 @@ namespace OCL2_Proyecto1_201800586.Analizador
 
         public Instruccion Struct(ParseTreeNode actual)
         {
-            return new Objeto(actual.ChildNodes.ElementAt(1).ToString().Split(' ')[0], atributos(actual.ChildNodes.ElementAt(4)), actual.ChildNodes.ElementAt(0).Token.Location.Line, actual.ChildNodes.ElementAt(0).Token.Location.Column);   
+            return new Objeto(actual.ChildNodes.ElementAt(1).ToString().Split(' ')[0], atributos(actual.ChildNodes.ElementAt(5)), actual.ChildNodes.ElementAt(0).Token.Location.Line, actual.ChildNodes.ElementAt(0).Token.Location.Column);   
         }
 
-        public LinkedList<Atributo> atributos(ParseTreeNode actual)
+        public LinkedList<Declaracion> atributos(ParseTreeNode actual)
         {
-            LinkedList<Atributo> lista = new LinkedList<Atributo>();
+            LinkedList<Declaracion> lista = new LinkedList<Declaracion>();
             foreach(ParseTreeNode nodo in actual.ChildNodes)
             {
-                foreach(ParseTreeNode id in nodo.ChildNodes.ElementAt(0).ChildNodes)
+                foreach(ParseTreeNode hijo in nodo.ChildNodes[0].ChildNodes)
                 {
-                    lista.AddLast(new Atributo(id.ToString().Split(' ')[0], tipoVariable(nodo.ChildNodes.ElementAt(1).ToString().Split(' ')[0]), nodo.ChildNodes.ElementAt(1).Token.Location.Line, nodo.ChildNodes.ElementAt(1).Token.Location.Column));
+                    lista.AddLast(new Declaracion(hijo.Token.Text, nodo.ChildNodes[1].Token.Text, tipoVariable(nodo.ChildNodes[1].Token.Text), hijo.Token.Location.Line, hijo.Token.Location.Column));
                 }
             }
+
             return lista;
         }
 
         public Instruccion declaraciones(ParseTreeNode actual)
         {
             LinkedList<Instruccion> lista = new LinkedList<Instruccion>();
-            string type = actual.ChildNodes.ElementAt(1).ToString().Split(' ')[0];
-            if (actual.ChildNodes.Count == 3)
+            string type = actual.ChildNodes.ElementAt(2).ToString().Split(' ')[0];
+            if (actual.ChildNodes.Count == 4)
             {
                 //Declaracion y asignacion
-                string token = actual.ChildNodes.ElementAt(0).ToString().Split(' ')[0];
-                lista.AddLast(new Declaracion(token, tipoVariable(type), actual.ChildNodes.ElementAt(0).Token.Location.Line, actual.ChildNodes.ElementAt(0).Token.Location.Column));
-                lista.AddLast(new Asignacion(token, expresion(actual.ChildNodes.ElementAt(2)), actual.ChildNodes.ElementAt(0).Token.Location.Line, actual.ChildNodes.ElementAt(0).Token.Location.Column));
+                string token = actual.ChildNodes.ElementAt(1).ToString().Split(' ')[0];
+                lista.AddLast(new Declaracion(token, tipoVariable(type), actual.ChildNodes.ElementAt(1).Token.Location.Line, actual.ChildNodes.ElementAt(1).Token.Location.Column));
+                lista.AddLast(new Asignacion(token, expresion(actual.ChildNodes.ElementAt(3)), actual.ChildNodes.ElementAt(1).Token.Location.Line, actual.ChildNodes.ElementAt(1).Token.Location.Column));
                 return new Declaraciones(lista);
             }
             else
             {
                 
-                if (actual.ChildNodes.ElementAt(0).ChildNodes.Count > 0)
+                if (actual.ChildNodes.ElementAt(1).ChildNodes.Count > 0)
                 {
                     
                     //declaracion e inicializacion de varias variables
-                    foreach (ParseTreeNode node in actual.ChildNodes.ElementAt(0).ChildNodes)
+                    foreach (ParseTreeNode node in actual.ChildNodes.ElementAt(1).ChildNodes)
                     {
                         string token = node.Token.ToString().Split(' ')[0];
-                        string tipo = actual.ChildNodes.ElementAt(1).ToString().Split(' ')[0];
+                        string tipo = actual.ChildNodes.ElementAt(2).ToString().Split(' ')[0];
 
                         lista.AddLast(new Declaracion(token, tipo, tipoVariable(type), node.Token.Location.Line, node.Token.Location.Column));
-                        if (tipoVariable(type) != Simbolo.Tipo.OBJETO)
-                        {
-                            lista.AddLast(new Asignacion(token, inicializar(type, node.Token.Location.Line, node.Token.Location.Column), node.Token.Location.Line, node.Token.Location.Column));
-                        }
+                        
                     }
                     return new Declaraciones(lista);
                 }
                 else
                 {
                     //declaracion e inicializacion una variable
-                    string token = actual.ChildNodes.ElementAt(0).ToString().Split(' ')[0];
-                    string tipo = actual.ChildNodes.ElementAt(1).ToString().Split(' ')[0];
-                    lista.AddLast(new Declaracion(token, tipo, tipoVariable(type), actual.ChildNodes.ElementAt(0).Token.Location.Line, actual.ChildNodes.ElementAt(0).Token.Location.Column));
-                    if (tipoVariable(type) != Simbolo.Tipo.OBJETO)
-                    {
-                        lista.AddLast(new Asignacion(token, inicializar(type, actual.ChildNodes.ElementAt(0).Token.Location.Line, actual.ChildNodes.ElementAt(0).Token.Location.Column), actual.ChildNodes.ElementAt(0).Token.Location.Line, actual.ChildNodes.ElementAt(0).Token.Location.Column));
-                    }
+                    string token = actual.ChildNodes.ElementAt(1).ToString().Split(' ')[0];
+                    string tipo = actual.ChildNodes.ElementAt(2).ToString().Split(' ')[0];
+                    lista.AddLast(new Declaracion(token, tipo, tipoVariable(type), actual.ChildNodes.ElementAt(1).Token.Location.Line, actual.ChildNodes.ElementAt(1).Token.Location.Column));
                     return new Declaraciones(lista);
                 }
             }
         }
-
-        //public LinkedList<Instruccion> listaId(ParseTreeNode actual, String type)
-        //{
-        //    LinkedList<Instruccion> lista = new LinkedList<Instruccion>();
-        //    foreach (ParseTreeNode nodo in actual.ChildNodes)
-        //    {
-        //        lista.AddLast(declaracion(nodo, type));
-        //        lista.AddLast(asignacion(nodo, type));
-        //    }
-        //    return lista;
-        //}
-
-        //public Instruccion declaracion(ParseTreeNode actual, String tipo)
-        //{
-        //    string identificador = actual.ChildNodes.ElementAt(0).ToString().Split(' ')[0];
-        //    return new Declaracion(identificador, tipoVariable(tipo));
-        //}
-
-        //public Instruccion asignacion(ParseTreeNode actual, String tipo)
-        //{
-        //    string identificador = actual.ChildNodes.ElementAt(0).ToString().Split(' ')[0];
-        //    return new Asignacion(identificador, inicializar(tipo));
-        //}
 
         public Simbolo.Tipo tipoVariable(String tipo)
         {
@@ -306,13 +267,13 @@ namespace OCL2_Proyecto1_201800586.Analizador
                 case "string":
                     return new Operacion("", Operacion.Tipo.CADENA, linea, columna);
                 case "integer":
-                    return new Operacion(0, linea, columna);
+                    return new Operacion((Double)0, linea, columna);
                 case "real":
-                    return new Operacion(0, linea, columna);
+                    return new Operacion((Double)0, linea, columna);
                 case "boolean":
-                    return new Operacion(true, linea, columna);
+                    return new Operacion(false, linea, columna);
                 default:
-                    return new Operacion("null", Operacion.Tipo.CADENA, linea, columna); ;
+                    return new Operacion("null", Operacion.Tipo.OBJETO, linea, columna); 
             }
         }
 
@@ -339,6 +300,8 @@ namespace OCL2_Proyecto1_201800586.Analizador
             {
                 case "Asignacion":
                     return asignar(actual.ChildNodes.ElementAt(0));
+                case "break":
+                    return new Break(actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
                 case "Asignar_Atributo":
                     return asignarAtributo(actual.ChildNodes.ElementAt(0));
                 case "While":
@@ -389,7 +352,15 @@ namespace OCL2_Proyecto1_201800586.Analizador
 
         public Instruccion asignarAtributo(ParseTreeNode actual)
         {
-            return new Asignacion(actual.ChildNodes.ElementAt(0).ToString().Split(' ')[0], actual.ChildNodes.ElementAt(1).ToString().Split(' ')[0], expresion(actual.ChildNodes.ElementAt(3)), actual.ChildNodes.ElementAt(0).Token.Location.Line, actual.ChildNodes.ElementAt(0).Token.Location.Column);
+            string identificador = actual.ChildNodes[0].ChildNodes[0].Token.Text;
+            LinkedList<String> atributos = new LinkedList<string>();
+
+            foreach (ParseTreeNode nodo in actual.ChildNodes[0].ChildNodes[1].ChildNodes)
+            {
+                atributos.AddLast(nodo.Token.Text);
+            }
+            return new AsignarAtributo(identificador, atributos, expresion(actual.ChildNodes[2]), actual.ChildNodes[0].ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].ChildNodes[0].Token.Location.Column);
+            //return new Asignacion(actual.ChildNodes.ElementAt(0).ToString().Split(' ')[0], actual.ChildNodes.ElementAt(1).ToString().Split(' ')[0], expresion(actual.ChildNodes.ElementAt(3)), actual.ChildNodes.ElementAt(0).Token.Location.Line, actual.ChildNodes.ElementAt(0).Token.Location.Column);
         }
 
         public Instruccion IF(ParseTreeNode actual)
@@ -400,7 +371,7 @@ namespace OCL2_Proyecto1_201800586.Analizador
         public Instruccion ELSEIF(ParseTreeNode actual)
         {
             LinkedList<Instruccion> lista = new LinkedList<Instruccion>();
-            foreach(ParseTreeNode nodo in actual.ChildNodes)
+            foreach(ParseTreeNode nodo in actual.ChildNodes[4].ChildNodes)
             {
                 lista.AddLast(new IF(expresion(nodo.ChildNodes.ElementAt(2)), sentencias(nodo.ChildNodes.ElementAt(4))));
             }
@@ -499,8 +470,17 @@ namespace OCL2_Proyecto1_201800586.Analizador
 
         public Operacion callObjeto(ParseTreeNode actual)
         {
-            return new Operacion(new CallAtributo(actual.ChildNodes.ElementAt(0).ToString().Split(' ')[0], actual.ChildNodes.ElementAt(1).ToString().Split(' ')[0], actual.ChildNodes.ElementAt(0).Token.Location.Line, actual.ChildNodes.ElementAt(0).Token.Location.Column), actual.ChildNodes.ElementAt(0).Token.Location.Line, actual.ChildNodes.ElementAt(0).Token.Location.Column);
+            string identificador = actual.ChildNodes[0].Token.Text;
+            LinkedList<String> atributos = new LinkedList<string>();
+            
+            foreach(ParseTreeNode nodo in actual.ChildNodes[1].ChildNodes)
+            {
+                atributos.AddLast(nodo.Token.Text);
+            }
+            CallAtributo atributo = new CallAtributo(identificador, atributos, actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
+            return new Operacion(atributo, actual.ChildNodes.ElementAt(0).Token.Location.Line, actual.ChildNodes.ElementAt(0).Token.Location.Column);
         }
+        
 
         public Operacion expresionNumerica(ParseTreeNode actual)
         {

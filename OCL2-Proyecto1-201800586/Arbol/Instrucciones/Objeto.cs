@@ -1,4 +1,5 @@
-﻿using OCL2_Proyecto1_201800586.Arbol.Interfaces;
+﻿using OCL2_Proyecto1_201800586.Analizador;
+using OCL2_Proyecto1_201800586.Arbol.Interfaces;
 using OCL2_Proyecto1_201800586.Arbol.Valores;
 using System;
 using System.Collections.Generic;
@@ -6,31 +7,38 @@ using System.Text;
 
 namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
 {
-    class Objeto : Instruccion
+    class Objeto : Instruccion , ICloneable
     {
         public int linea { get ; set ; }
         public int columna { get ; set ; }
 
-        private String identificador;
-        private LinkedList<Atributo> atributos;
-
-        public Objeto(String identificador, LinkedList<Atributo> atributos, int linea, int columna)
+        public String identificador;
+        private LinkedList<Declaracion> atributos;
+        public TablaSimbolo tabla;
+        public Objeto(String identificador, LinkedList<Declaracion> atributos, int linea, int columna)
         {
             this.identificador = identificador;
             this.atributos = atributos;
             this.linea = linea;
             this.columna = linea;
+            tabla = new TablaSimbolo();
         }
 
         public object ejeuctar(TablaSimbolo ts)
         {
-            TablaSimbolo aux = new TablaSimbolo();
-            foreach (Atributo atributo in atributos)
+            foreach(Declaracion declarar in atributos)
             {
-                aux.AddLast(atributo.getAtributo());
+                declarar.ejeuctar(tabla);
             }
-            ts.AddLast(new Simbolo(identificador, Simbolo.Tipo.STRUCT, aux, linea, columna, "global"));
+
+            //ts.AddLast(new Simbolo(identificador, Simbolo.Tipo.STRUCT, tabla, linea, columna, "global"));
+            Sintactico.objetos.AddLast((Objeto)this.Clone());
             return null;
+        }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
         }
     }
 }

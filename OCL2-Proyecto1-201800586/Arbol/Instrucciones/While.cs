@@ -35,7 +35,12 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                     }
                     foreach (Instruccion ins in instrucciones)
                     {
-                        ins.ejeuctar(tablaLocal);
+                        Object o = ins.ejeuctar(tablaLocal);
+                        if (o != null && o.GetType().Equals(typeof(Break)))
+                        {
+                            return null;
+                        }
+                        
                     }
                 }
             }

@@ -92,9 +92,19 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
             TablaSimbolo nueva = new TablaSimbolo();
             foreach(Simbolo s in this)
             {
-                nueva.AddLast((Simbolo)s.Clone());
+                Simbolo aux = (Simbolo)s.Clone();
+                if(aux.Valor is TablaSimbolo)
+                {
+                    aux.Valor = ((TablaSimbolo)aux.Valor).Clone();
+                }
+                nueva.AddLast(aux);
             }
             return nueva;
+        }
+
+        public object Clone2()
+        {
+            return this.MemberwiseClone();
         }
     }
 }
