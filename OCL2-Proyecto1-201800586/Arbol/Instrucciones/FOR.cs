@@ -1,4 +1,5 @@
 ﻿
+using OCL2_Proyecto1_201800586.Analizador;
 using OCL2_Proyecto1_201800586.Arbol.Interfaces;
 using OCL2_Proyecto1_201800586.Arbol.Valores;
 using System;
@@ -26,8 +27,8 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
             this.finalizar = finalizar;
             this.incrementar_decrementar = incrementar_decrementar;
             this.instrucciones = instrucciones;
-            this.linea = linea;
-            this.columna = columna;
+            this.linea = linea + 1;
+            this.columna = columna + 1;
         }
 
         object Instruccion.ejeuctar(TablaSimbolo ts)
@@ -52,12 +53,21 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                                     {
                                         return null;
                                     }
+                                    else if (o != null && o is Continue)
+                                    {
+                                        break;
+                                    }
+                                    else if (o is Exit)
+                                    {
+                                        return o;
+                                    }
                                 }
                             }
                         }
                         else
                         {
                             Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + ", Los limites de la sentencia 'For' no son los correctos\n";
+                            Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "Los limites de la sentencia 'For' no son los correctos"));
                         }
                     }
                     else
@@ -74,19 +84,29 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                                     {
                                         return null;
                                     }
-                                    
+                                    else if (o != null && o is Continue)
+                                    {
+                                        break;
+                                    }
+                                    else if (o is Exit)
+                                    {
+                                        return o;
+                                    }
+
                                 }
                             }
                         }
                         else
                         {
                             Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + ", Los limites de la sentencia 'For' no son los correctos\n";
+                            Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "Los limites de la sentencia 'For' no son los correctos"));
                         }
                     }
                 }
                 else
                 {
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + ", La sentencia 'For' solo acepta enteros\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "La sentencia 'For' solo acepta enteros"));
                 }
             }
             return null;

@@ -29,6 +29,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
             this.tipo = tipo;
             this.linea = linea + 1;
             this.columna = columna + 1;
+            referencia = false;
         }
 
         public int linea { get ; set ; }
@@ -42,11 +43,15 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                 {
                     if (objeto == o.identificador)
                     {
-                        ts.AddLast(new Simbolo(identificador, Simbolo.Tipo.OBJETO, (TablaSimbolo)o.tabla.Clone(), linea, columna, "global"));
+                        Simbolo nuevo = new Simbolo(identificador, Simbolo.Tipo.OBJETO, (TablaSimbolo)o.tabla.Clone(), this.linea, this.columna, "global");
+                        nuevo.linea = linea;
+                        nuevo.columna = columna;
+                        ts.AddLast(nuevo);
                         return null;
                     }
                 }
                 Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El objeto '" + identificador + "' no existe. \n";
+                Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El objeto '" + identificador + "' no existe."));
                 return null;
             }
             else
@@ -55,20 +60,31 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                 {
                     if(tipo == Simbolo.Tipo.ENTERO || tipo == Simbolo.Tipo.DECIMAL)
                     {
-                        ts.AddLast(new Simbolo(identificador, tipo, 0.0, linea, columna, "global"));
+                        Simbolo nuevo =  new Simbolo(identificador, tipo, 0.0, this.linea, this.columna, "global");
+                        nuevo.linea = linea;
+                        nuevo.columna = columna;
+                        ts.AddLast(nuevo);
                     }
                     else if (tipo == Simbolo.Tipo.CADENA)
                     {
-                        ts.AddLast(new Simbolo(identificador, tipo, "", linea, columna, "global"));
+                        Simbolo nuevo = new Simbolo(identificador, tipo, "", this.linea, this.columna, "global");
+                        nuevo.linea = linea;
+                        nuevo.columna = columna;
+                        ts.AddLast(nuevo);
                     }
                     else if (tipo == Simbolo.Tipo.BOOLEANA)
                     {
-                        ts.AddLast(new Simbolo(identificador, tipo, false, linea, columna, "global"));
+                        Simbolo nuevo = new Simbolo(identificador, tipo, false, this.linea, this.columna, "global");
+                        nuevo.linea = linea;
+                        nuevo.columna = columna;
+                        ts.AddLast(nuevo);
                     }
+                    //Form1.consola.Text += "linea: " + linea + " columna:" + columna;
                 }
                 else
                 {
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " La variable '" + identificador + "' ya ha sido declarado\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "La variable '" + identificador + "' ya ha sido declarado"));
                 }
             }            
             return null;

@@ -1,4 +1,5 @@
-﻿using OCL2_Proyecto1_201800586.Arbol.Interfaces;
+﻿using OCL2_Proyecto1_201800586.Analizador;
+using OCL2_Proyecto1_201800586.Arbol.Interfaces;
 using OCL2_Proyecto1_201800586.Arbol.Valores;
 using System;
 using System.Collections.Generic;
@@ -18,8 +19,8 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
         {
             this.identificador = identificador;
             this.atributos = atributos;
-            this.linea = linea;
-            this.columna = columna;
+            this.linea = linea + 1;
+            this.columna = columna + 1;
         }
         public object ejeuctar(TablaSimbolo ts)
         {
@@ -48,12 +49,14 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                         else
                         {
                             Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El tributo '" + atributo + "' no es de tipo objeto para acceder a sus atributos\n";
+                            Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, " El tributo '" + atributo + "' no es de tipo objeto para acceder a sus atributos"));
                             return null;
                         }
                     }
                     else
                     {
                         Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El tributo '" + atributo + "' no esta declarado\n";
+                        Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, " El tributo '" + atributo + "' no esta declarado"));
                         return null;
                     }
                     i++;
@@ -62,6 +65,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
             else
             {
                 Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El objeto '" + identificador + "' no esta declarado\n";
+                Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, " El objeto '" + identificador + "' no esta declarado"));
             }
             return null;
         }

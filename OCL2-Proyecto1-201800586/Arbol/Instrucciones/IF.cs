@@ -1,4 +1,5 @@
-﻿using OCL2_Proyecto1_201800586.Arbol.Interfaces;
+﻿using OCL2_Proyecto1_201800586.Analizador;
+using OCL2_Proyecto1_201800586.Arbol.Interfaces;
 using OCL2_Proyecto1_201800586.Arbol.Valores;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
         {
             this.condicion = condicion;
             this.instruccionesIf = instruccionesIf;
+            
         }
 
         public IF(Operacion condicion, LinkedList<Instruccion> instruccionesIf, LinkedList<Instruccion> instruccionesElse)
@@ -26,6 +28,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
             this.condicion = condicion;
             this.instruccionesIf = instruccionesIf;
             this.instruccionesElse = instruccionesElse;
+
         }
 
         public IF(Operacion condicion, LinkedList<Instruccion> instruccionesIf, LinkedList<Instruccion> instruccionesElse, LinkedList<Instruccion> elseif)
@@ -56,6 +59,14 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                         if(ins.GetType().Equals(typeof(Break)))
                         {
                             return new Break(0, 0); ;
+                        }
+                        else if (ins.GetType().Equals(typeof(Continue)))
+                        {
+                            return new Continue(0, 0);
+                        }
+                        else if(ins is Exit)
+                        {
+                            return ins;
                         }
                         ins.ejeuctar(tablaLocal);
                     }
@@ -92,6 +103,14 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                             {
                                 return new Break(0,0);
                             }
+                            else if (ins.GetType().Equals(typeof(Continue)))
+                            {
+                                return new Continue(0, 0);
+                            }
+                            else if (ins is Exit)
+                            {
+                                return ins;
+                            }
                             ins.ejeuctar(tablaLocal);
                         }
                         return true;
@@ -101,6 +120,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
             else
             {
                 Form1.consola.Text += "Linea: " + condicion.linea + " Columna: " + condicion.columna + " El if solo acepta condiciones \n";
+                Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El if solo acepta condiciones"));
                 return null;
             }
             

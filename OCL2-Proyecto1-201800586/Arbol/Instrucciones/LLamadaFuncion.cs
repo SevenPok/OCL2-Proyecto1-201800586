@@ -37,6 +37,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                 }
             }
             Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " La funcion '" + identificador + "' no existe.\n";
+            Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "La funcion '" + identificador + "' no existe"));
             return null;
         }
     }

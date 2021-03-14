@@ -1,4 +1,5 @@
-﻿using OCL2_Proyecto1_201800586.Arbol.Interfaces;
+﻿using OCL2_Proyecto1_201800586.Analizador;
+using OCL2_Proyecto1_201800586.Arbol.Interfaces;
 using OCL2_Proyecto1_201800586.Arbol.Valores;
 using System;
 using System.Collections;
@@ -21,6 +22,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
         //public LinkedList<Operacion> operaciones;
         public Simbolo.Tipo tipo;
         public bool disponible = true;
+        public TablaSimbolo tablaLocal = new TablaSimbolo();
 
         public Funcion(String identificador, LinkedList<Declaracion> parametros, LinkedList<Instruccion> instrucciones, LinkedList<Instruccion> sentencias, Simbolo.Tipo tipo, int linea, int columna)
         {
@@ -39,32 +41,49 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
             {
                 if (tipo == Simbolo.Tipo.ENTERO)
                 {
-                    ts.AddLast(new Simbolo(identificador, tipo, 0, linea, columna, "global"));
+                    Simbolo nuevo = new Simbolo(identificador, tipo, 0, linea, columna, "global");
+                    nuevo.linea = linea;
+                    nuevo.columna = columna;
+                    ts.AddLast(nuevo);
                 }
                 else if (tipo == Simbolo.Tipo.DECIMAL)
                 {
-                    ts.AddLast(new Simbolo(identificador, tipo, (Double)0, linea, columna, "global"));
+                    Simbolo nuevo = new Simbolo(identificador, tipo, (Double)0, linea, columna, "global");
+                    nuevo.linea = linea;
+                    nuevo.columna = columna;
+                    ts.AddLast(nuevo);
                 }
                 else if (tipo == Simbolo.Tipo.BOOLEANA)
                 {
-                    ts.AddLast(new Simbolo(identificador, tipo, true, linea, columna, "global"));
+                    Simbolo nuevo = new Simbolo(identificador, tipo, true, linea, columna, "global");
+                    nuevo.linea = linea;
+                    nuevo.columna = columna;
+                    ts.AddLast(nuevo);
                 }
                 else if (tipo == Simbolo.Tipo.CADENA)
                 {
-                    ts.AddLast(new Simbolo(identificador, tipo, "", linea, columna, "global"));
+                    Simbolo nuevo = new Simbolo(identificador, tipo, "", linea, columna, "global");
+                    nuevo.linea = linea;
+                    nuevo.columna = columna;
+                    ts.AddLast(nuevo);
                 }
                 else if(tipo == Simbolo.Tipo.VOID)
                 {
-                    ts.AddLast(new Simbolo(identificador, tipo, null, linea, columna, "global"));
+                    Simbolo nuevo = new Simbolo(identificador, tipo, null, linea, columna, "global");
+                    nuevo.linea = linea;
+                    nuevo.columna = columna;
+                    ts.AddLast(nuevo);
                 }
                 else
                 {
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El tipo de dato es desconocido\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El tipo de dato es desconocido"));
                 }
             }
             else
             {
                 Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El identificador '" + identificador + "' ya ha sido declarado\n";
+                Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El identificador '" + identificador + "' ya ha sido declarado"));
                 disponible = false;
             }
             
@@ -131,6 +150,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                                 else
                                 {
                                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " No se hizo referencia a un identificador.\n";
+                                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "No se hizo referencia a un identificador"));
                                     return null;
                                 }
                                   
@@ -151,6 +171,8 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                     instruccion.ejeuctar(local);
                 }
 
+                tablaLocal = (TablaSimbolo)local.Clone();
+
                 foreach (Simbolo s in ts)
                 {
                     if(s.Identificador != identificador)
@@ -161,7 +183,11 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
 
                 foreach (Instruccion sentencia in sentencias)
                 {
-                    sentencia.ejeuctar(local);
+                    Object o = sentencia.ejeuctar(local);
+                    if (o is Exit)
+                    {
+                        local.setValor(identificador, ((Exit)o).getValorImplicito(local));
+                    }
                 }
 
                 ts.setValor(identificador, local.getValor(identificador));
@@ -179,15 +205,17 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
             else
             {
                 Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " el numero de parametros no coincide con los de la funcion\n";
+                Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El numero de parametros no coincide con los de la funcion"));
             }
 
 
-            //Simbolo aux = ts.getSimbolo(identificador);
-            //if (aux != null)
-            //{
-            //    return aux.Valor;
-            
-            return null;
+            Simbolo aux = ts.getSimbolo(identificador);
+            if (aux != null)
+            {
+                return aux.Valor;
+            }
+
+                return null;
         }
 
         public object Clone()

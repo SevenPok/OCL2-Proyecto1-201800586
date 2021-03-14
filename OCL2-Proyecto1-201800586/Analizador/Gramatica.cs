@@ -92,6 +92,9 @@ namespace OCL2_Proyecto1_201800586.Analizador
             var PR_PROCEDURE = ToTerm("procedure");
             var PR_FUNCTION = ToTerm("function");
 
+            var graficar_ts = ToTerm("graficar_ts");
+            var exit = ToTerm("Exit");
+
             RegisterOperators(1, Associativity.Left, OR);
             RegisterOperators(2, Associativity.Left, AND);
             RegisterOperators(3, Associativity.Left, IGUAL, DIFERENTE);
@@ -154,6 +157,8 @@ namespace OCL2_Proyecto1_201800586.Analizador
             NonTerminal constante = new NonTerminal("Constante");
             NonTerminal accsesos = new NonTerminal("Accesos");
             NonTerminal accseso = new NonTerminal("Acceso");
+            NonTerminal salir = new NonTerminal("Exit");
+            NonTerminal graficar = new NonTerminal("Graficar");
             #endregion
 
             #region Gramatica
@@ -213,7 +218,9 @@ namespace OCL2_Proyecto1_201800586.Analizador
                            | DOWHILE + PTCOMA
                            | CALLFuncion + PTCOMA
                            | PR_BREAK + PTCOMA
-                           | PR_CONTINUE + PTCOMA   ;
+                           | PR_CONTINUE + PTCOMA
+                           | salir + PTCOMA
+                           | graficar + PTCOMA;
 
             asignacion.Rule = IDENTIFICADOR + DOSPT + IGUAL + expresion;
 
@@ -303,6 +310,11 @@ namespace OCL2_Proyecto1_201800586.Analizador
             CALLFuncion.Rule = IDENTIFICADOR + PARIZQ + callparametro + PARDER;
 
             callparametro.Rule = MakeStarRule(callparametro, COMA, expresion);
+
+            salir.Rule = exit + PARIZQ + expresion + PARDER
+                       | exit + PARIZQ + PARDER;
+
+            graficar.Rule = graficar_ts + PARIZQ + PARDER;
 
             tipo.Rule = STRING
                       | INTEGER

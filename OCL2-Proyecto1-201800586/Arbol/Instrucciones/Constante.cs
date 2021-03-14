@@ -1,4 +1,5 @@
-﻿using OCL2_Proyecto1_201800586.Arbol.Interfaces;
+﻿using OCL2_Proyecto1_201800586.Analizador;
+using OCL2_Proyecto1_201800586.Arbol.Interfaces;
 using OCL2_Proyecto1_201800586.Arbol.Valores;
 using System;
 using System.Collections.Generic;
@@ -19,8 +20,8 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
         {
             this.identificador = identificador;
             this.valor = valor;
-            this.linea = linea;
-            this.columna = columna;
+            this.linea = linea + 1;
+            this.columna = columna + 1;
         }
 
         public object ejeuctar(TablaSimbolo ts)
@@ -58,12 +59,14 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                     else
                     {
                         Form1.consola.Text += "Linea: " + valor.linea + " Columna: " + valor.columna + ", la expresion no concuerda con el tipo de dato.\n";
+                        Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "La expresion no concuerda con el tipo de dato"));
                     }
                     return null;
                 }
                 else
                 {
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + ", el identificador '" + identificador + "' ya existe.\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El identificador '" + identificador + "' ya existe"));
                     return null;
                 }
             }

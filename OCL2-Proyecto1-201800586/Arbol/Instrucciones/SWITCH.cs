@@ -1,4 +1,5 @@
-﻿using OCL2_Proyecto1_201800586.Arbol.Interfaces;
+﻿using OCL2_Proyecto1_201800586.Analizador;
+using OCL2_Proyecto1_201800586.Arbol.Interfaces;
 using OCL2_Proyecto1_201800586.Arbol.Valores;
 using System;
 using System.Collections.Generic;
@@ -19,8 +20,8 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
             this.expresion = expresion;
             this.casos = casos;
             this.listaElse = listaElse;
-            this.linea = linea;
-            this.columna = columna;
+            this.linea = linea + 1;
+            this.columna = columna + 1;
         }
 
         public object ejeuctar(TablaSimbolo ts)
@@ -35,13 +36,18 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                     {
                         if (condicion.ToString() == casoVerdadero.ToString())
                         {
-                            c.ejeuctar(ts);
+                            Object o = c.ejeuctar(ts);
+                            if (o is Exit)
+                            {
+                                return o;
+                            }
                             return null;
                         } 
                     }
                     else
                     {
                         Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " , el caso no es el mismo tipo de dato que la variable\n";
+                        Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "el caso no es el mismo tipo de dato que la variable"));
                         return null;
                     }
                 }
@@ -53,6 +59,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
 
             }
             Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " , el caso no es el mismo tipo de dato que la variable\n";
+            Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El caso no es el mismo tipo de dato que la variable"));
             return null;
         }
     }

@@ -1,4 +1,5 @@
-﻿using OCL2_Proyecto1_201800586.Arbol.Interfaces;
+﻿using OCL2_Proyecto1_201800586.Analizador;
+using OCL2_Proyecto1_201800586.Arbol.Interfaces;
 using OCL2_Proyecto1_201800586.Arbol.Valores;
 using System;
 using System.Collections.Generic;
@@ -18,8 +19,8 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
         {
             this.sentencias = sentencias;
             this.condicion = condicion;
-            this.linea = linea;
-            this.columna = columna;
+            this.linea = linea + 1;
+            this.columna = columna + 1;
         }
         public object ejeuctar(TablaSimbolo ts)
         {
@@ -41,13 +42,22 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                         {
                             return null;
                         }
-                        
+                        else if (o != null && o.GetType().Equals(typeof(Continue)))
+                        {
+                            break;
+                        }
+                        else if (o is Exit)
+                        {
+                            return o;
+                        }
+
                     }
                 } while (!(Boolean)condicion.ejeuctar(ts));
             }
             else
             {
                 Form1.consola.Text += "La sentencia repeat solo acepta condiciones logicas y relacionales.";
+                Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "La sentencia 'repeat' solo acepta condiciones logicas y relacionales."));
             }
             return null;
         }

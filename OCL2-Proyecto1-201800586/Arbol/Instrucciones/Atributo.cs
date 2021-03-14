@@ -21,8 +21,8 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
             this.identificador = identificador;
             this.objeto = objeto;
             this.tipo = tipo;
-            this.linea = linea;
-            this.columna = columna;
+            this.linea = linea + 1;
+            this.columna = columna + 1;
         }
 
         public object ejeuctar(TablaSimbolo ts)

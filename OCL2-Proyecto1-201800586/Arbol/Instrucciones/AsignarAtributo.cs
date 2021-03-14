@@ -1,4 +1,5 @@
-﻿using OCL2_Proyecto1_201800586.Arbol.Interfaces;
+﻿using OCL2_Proyecto1_201800586.Analizador;
+using OCL2_Proyecto1_201800586.Arbol.Interfaces;
 using OCL2_Proyecto1_201800586.Arbol.Valores;
 using System;
 using System.Collections.Generic;
@@ -59,6 +60,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                                         else
                                         {
                                             Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El tributo '" + atributo + "' no es de tipo objeto\n";
+                                            Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El tributo '" + atributo + "' no es de tipo objeto"));
                                         }
                                         return null;
                                     }
@@ -86,6 +88,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                                     else
                                     {
                                         Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " La expresion no coincide con el tipo de dato\n";
+                                        Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "La expresion no coincide con el tipo de dato"));
                                         return null;
                                     }
                                     return null;
@@ -93,12 +96,14 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                                 else
                                 {
                                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El tributo '" + atributo + "' no es de tipo objeto para acceder a sus atributos\n";
+                                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El tributo '" + atributo + "' no es de tipo objeto para acceder a sus atributos"));
                                     return null;
                                 }
                             }
                             else
                             {
                                 Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El tributo '" + atributo + "' no esta declarado\n";
+                                Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El tributo '" + atributo + "' no esta declarado"));
                                 return null;
                             }
                             i++;
@@ -107,16 +112,19 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                     else
                     {
                         Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " La expresion no coincide con el tipo de dato\n";
+                        Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "La expresion no coincide con el tipo de dato"));
                     }
                 }
                 else
                 {
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " La variable '" + identificador + "' no es objeto\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "La variable '" + identificador + "' no es objeto"));
                 }
             }
             else
             {
                 Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El objeto '" + identificador + "' no esta declarado\n";
+                Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, " El objeto '" + identificador + "' no esta declarado"));
             }
             return null;
         }

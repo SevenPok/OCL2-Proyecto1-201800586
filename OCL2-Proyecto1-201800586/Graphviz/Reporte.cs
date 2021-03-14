@@ -1,5 +1,6 @@
 ﻿using Irony.Parsing;
 using OCL2_Proyecto1_201800586.Analizador;
+using OCL2_Proyecto1_201800586.Arbol.Instrucciones;
 using OCL2_Proyecto1_201800586.Arbol.Valores;
 using System;
 using System.Collections.Generic;
@@ -36,13 +37,13 @@ namespace OCL2_Proyecto1_201800586.Graphviz
             "<table cellpadding='10' border = '1' align='center'>" +
             "<tr>" +
 
+            "<td><strong>Tipo" +
+            "</strong></td>" +
+
             "<td><strong>Descripcion" +
             "</strong></td>" +
 
-            "<td><strong>Tipo Error" +
-            "</strong></td>" +
-
-            "<td><strong>Fila" +
+            "<td><strong>Linea" +
             "</strong></td>" +
 
             "<td><strong>Columna" +
@@ -53,6 +54,27 @@ namespace OCL2_Proyecto1_201800586.Graphviz
             String Cad_tokens = "";
             String tempo_tokens;
 
+            foreach(Errores e in listaError)
+            {
+
+                tempo_tokens = "";
+                tempo_tokens = "<tr>" +
+
+                "<td>" + e.tipo.ToString() +
+                "</td>" +
+
+                "<td>" + e.descripcion+
+                "</td>" +
+
+                "<td>" + e.linea +
+                "</td>" +
+
+                "<td>" + e.columna +
+                "</td>" +
+
+                "</tr>";
+                Cad_tokens = Cad_tokens + tempo_tokens;
+            }
 
             Contenido_html = Contenido_html + Cad_tokens +
             "</table>" +
@@ -83,26 +105,71 @@ namespace OCL2_Proyecto1_201800586.Graphviz
             "<td><strong>Id" +
             "</strong></td>" +
 
-            "<td><strong>Tipo Dato" +
-            "</strong></td>" +
-
              "<td><strong>Tipo Simbolo" +
             "</strong></td>" +
 
-
-            "<td><strong>Valor" +
+            "<td><strong>Ambito" +
             "</strong></td>" +
 
-            "<td><strong>Entorno" +
+            "<td><strong>Linea" +
+            "</strong></td>" +
+
+            "<td><strong>Columna" +
             "</strong></td>" +
 
             "</tr>";
 
             String Cad_tokens = "";
             String tempo_tokens;
-            foreach (Simbolo sim in ts)
+            foreach (Simbolo s in ts)
             {
+                tempo_tokens = "";
+                tempo_tokens = "<tr>" +
 
+                "<td>" + s.Identificador+
+                "</td>" +
+
+                "<td>" + s.type.ToString() +
+                "</td>" +
+
+                "<td>" + s.Ambito +
+                "</td>" +
+
+                "<td>" + s.linea +
+                "</td>" +
+
+                 "<td>" + s.columna +
+                "</td>" +
+
+                "</tr>";
+                Cad_tokens = Cad_tokens + tempo_tokens;
+            }
+
+            foreach(Funcion f in Sintactico.funciones)
+            {
+                foreach(Simbolo s in f.tablaLocal)
+                {
+                    tempo_tokens = "";
+                    tempo_tokens = "<tr>" +
+
+                    "<td>" + s.Identificador +
+                    "</td>" +
+
+                    "<td>" + s.type.ToString() +
+                    "</td>" +
+
+                    "<td>" + "Local en '" + f.identificador + "'" +
+                    "</td>" +
+
+                    "<td>" + s.linea +
+                    "</td>" +
+
+                     "<td>" + s.columna +
+                    "</td>" +
+
+                    "</tr>";
+                    Cad_tokens = Cad_tokens + tempo_tokens;
+                }
             }
 
             Contenido_html = Contenido_html + Cad_tokens +

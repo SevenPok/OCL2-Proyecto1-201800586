@@ -1,4 +1,5 @@
-﻿using OCL2_Proyecto1_201800586.Arbol.Interfaces;
+﻿using OCL2_Proyecto1_201800586.Analizador;
+using OCL2_Proyecto1_201800586.Arbol.Interfaces;
 using OCL2_Proyecto1_201800586.Arbol.Valores;
 using System;
 using System.Collections.Generic;
@@ -37,6 +38,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
             if(constante != null && constante.constate)
             {
                 Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El identificador '" + identificador + "' es una constante.\n";
+                Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El identificador '" + identificador + "' es una constante"));
                 return null;
             }
             Object aux = valor.ejeuctar(ts);
@@ -53,6 +55,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                     else
                     {
                         Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " No se puede asignar un tipo '" + aux.GetType().ToString() + "' a un tipo '" + tipo + "'\n";
+                        Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "No se puede asignar un tipo '" + aux.GetType().ToString() + "' a un tipo '" + tipo));
                     }
                 }
                 else if (tipo == Simbolo.Tipo.DECIMAL.ToString())
@@ -65,6 +68,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                     else
                     {
                         Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " No se puede asignar un tipo '" + aux.GetType().ToString() + "' a un tipo '" + tipo + "'\n";
+                        Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "No se puede asignar un tipo '" + aux.GetType().ToString() + "' a un tipo '" + tipo));
                     }
                 }
                 else if (tipo == Simbolo.Tipo.CADENA.ToString())
@@ -77,6 +81,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                     else
                     {
                         Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " No se puede asignar un tipo '" + aux.GetType().ToString() + "' a un tipo '" + tipo + "'\n";
+                        Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "No se puede asignar un tipo '" + aux.GetType().ToString() + "' a un tipo '" + tipo));
                     }
                 }
                 else if (tipo == Simbolo.Tipo.BOOLEANA.ToString())
@@ -89,6 +94,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                     else
                     {
                         Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " No se puede asignar un tipo '" + aux.GetType().ToString() + "' a un tipo '" + tipo + "'\n";
+                        Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "No se puede asignar un tipo '" + aux.GetType().ToString() + "' a un tipo '" + tipo));
                     }
                 }
                 else if (tipo == Simbolo.Tipo.OBJETO.ToString())
@@ -120,23 +126,28 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                             }
 
                             Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " No se puede asignar un tipo '" + aux.GetType().ToString() + "' a un tipo '" + atributos.getTipo(atributo) + "'\n";
+                            Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "No se puede asignar un tipo '" + aux.GetType().ToString() + "' a un tipo '" + atributos.getTipo(atributo)));
                         }
                         else
                         {
                             Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El atributo '" + atributo + "' no existe\n";
+                            Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El atributo '" + atributo + "' no existe"));
                         }
                     }
                 }
                 else if (tipo == Simbolo.Tipo.STRUCT.ToString())
                 {
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " No se puede asignar un objeto'\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "No se puede asignar un objeto"));
                 }
                 else
                 {
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " No se puede asignar un tipo '" + aux.GetType().ToString() + "' a un tipo '" + tipo + "'\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "No se puede asignar un tipo '" + aux.GetType().ToString() + "' a un tipo '" + tipo));
                 }
             }
             Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El identificador '" + identificador + "' es desconocido.\n";
+            Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El identificador '" + identificador + "' es desconocido"));
             return false;
         }
     }

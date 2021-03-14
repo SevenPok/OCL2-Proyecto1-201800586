@@ -19,8 +19,8 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
         {
             this.identificador = identificador;
             this.atributos = atributos;
-            this.linea = linea;
-            this.columna = linea;
+            this.linea = linea + 1;
+            this.columna = columna + 1;
             tabla = new TablaSimbolo();
         }
 

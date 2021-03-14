@@ -17,6 +17,7 @@ namespace OCL2_Proyecto1_201800586.Analizador
     {
         public static LinkedList<Funcion> funciones = new LinkedList<Funcion>();
         public static LinkedList<Objeto> objetos = new LinkedList<Objeto>();
+        public static LinkedList<Errores> errores = new LinkedList<Errores>();
         public bool analizar(String cadena)
         {
             Gramatica gramatica = new Gramatica();
@@ -50,9 +51,12 @@ namespace OCL2_Proyecto1_201800586.Analizador
                 {
                     Graficador grafo = new Graficador();
                     grafo.graficar(generarGrafo(raiz));
+                    Reporte reporte = new Reporte();
+                    reporte.Html_Errores(errores);
                 }
                 funciones.Clear();
                 objetos.Clear();
+                errores.Clear();
                 //Form1.consola.Text += "\nLa lisata tiene: " + funciones.Count.ToString();
                 return true;
             }
@@ -300,8 +304,14 @@ namespace OCL2_Proyecto1_201800586.Analizador
             {
                 case "Asignacion":
                     return asignar(actual.ChildNodes.ElementAt(0));
+                case "Graficar":
+                    return tablaDeSimbolo(actual.ChildNodes.ElementAt(0));
+                case "Exit":
+                    return salir(actual.ChildNodes[0]);
                 case "break":
                     return new Break(actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
+                case "continue":
+                    return new Continue(actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
                 case "Asignar_Atributo":
                     return asignarAtributo(actual.ChildNodes.ElementAt(0));
                 case "While":
@@ -334,6 +344,20 @@ namespace OCL2_Proyecto1_201800586.Analizador
                 default:
                     return imprimir(actual.ChildNodes.ElementAt(0));
             }
+        }
+
+        public graficar_ts tablaDeSimbolo(ParseTreeNode actual)
+        {
+            return new graficar_ts(actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
+        }
+
+        public Exit salir(ParseTreeNode actual)
+        {
+            if(actual.ChildNodes.Count == 2)
+            {
+                return new Exit(expresion(actual.ChildNodes[1]), actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
+            }
+            return new Exit(null, actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
         }
 
         public Instruccion para(ParseTreeNode actual)

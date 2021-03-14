@@ -1,4 +1,5 @@
-﻿using OCL2_Proyecto1_201800586.Arbol.Instrucciones;
+﻿using OCL2_Proyecto1_201800586.Analizador;
+using OCL2_Proyecto1_201800586.Arbol.Instrucciones;
 using OCL2_Proyecto1_201800586.Arbol.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -124,9 +125,11 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                             return (Double)left / (Double)right;
                         }
                         Form1.consola.Text += "No se puede dividir entre 0'\n";
+                        Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "No se puede dividir entre 0"));
                         return null;
                     }
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador '/' no se puede ejecutar entre un '" + izquierda.tipo + "' con un '"+ derecha.tipo + "'\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El operador '/' no se puede ejecutar entre un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'"));
                     return null;
                 case Tipo.MULTIPLICACION:
                     left = izquierda.ejeuctar(ts);
@@ -136,6 +139,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                         return (Double)left * (Double)right;   
                     }
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador '*' no se puede ejecutar entre un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El operador '*' no se puede ejecutar entre un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'"));
                     return null;
                 case Tipo.RESTA:
                     left = izquierda.ejeuctar(ts);
@@ -145,6 +149,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                         return (Double)left - (Double)right;
                     }
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador '-' no se puede ejecutar entre un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El operador '-' no se puede ejecutar entre un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'"));
                     return null;
                 case Tipo.SUMA:
                     left = izquierda.ejeuctar(ts);
@@ -161,6 +166,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                         }
                     }
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador '+' no se puede ejecutar entre un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El operador '+' no se puede ejecutar entre un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'"));
                     return null;
                 case Tipo.MODULAR:
                     left = izquierda.ejeuctar(ts);
@@ -170,6 +176,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                         return (Double)left % (Double)right;
                     }
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + "El operador '%' no se puede ejecutar entre un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El operador '%' no se puede ejecutar entre un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'"));
                     return null;
                 case Tipo.NEGATIVO:
                     left = izquierda.ejeuctar(ts);
@@ -178,6 +185,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                         return (Double)left*-1;
                     }
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador '-' no se puede ejecutar con un '" + izquierda.tipo + "'\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El operador '-' no se puede ejecutar con un '" + izquierda.tipo + "'"));
                     return null;
                 case Tipo.NOT:
                     left = izquierda.ejeuctar(ts);
@@ -186,6 +194,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                         return !(Boolean)left;
                     }
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador 'not' no se puede ejecutar con un '" + izquierda.tipo + "'\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El operador 'not' no se puede ejecutar con un '" + izquierda.tipo + "'"));
                     return null;
                 case Tipo.ENTERO:
                     return Double.Parse(valor.ToString());
@@ -197,6 +206,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                         return ts.getValor(valor.ToString());
                     }
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El identificador '" + valor.ToString() + "' es desconocido.\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El identificador '" + valor.ToString() + "' es desconocido"));
                     return null;
                 case Tipo.CADENA:
                     return valor.ToString();
@@ -216,6 +226,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                         return o; 
                     }
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + linea + " La funcion '" + llamada.identificador + "' no devuelve ningun valor.\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "La funcion '" + llamada.identificador + "' no devuelve ningun valor"));
                     return null;
                 case Tipo.MAYOR:
                     left = izquierda.ejeuctar(ts);
@@ -225,6 +236,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                         return (Double)left > (Double)right;
                     }
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador '>' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El operador '>' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'"));
                     return null;
                 case Tipo.MENOR:
                     left = izquierda.ejeuctar(ts);
@@ -234,6 +246,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                         return (Double)left < (Double)right;
                     }
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador '<' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El operador '<' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'"));
                     return null;
                 case Tipo.MAYORIGUAL:
                     left = izquierda.ejeuctar(ts);
@@ -243,6 +256,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                         return (Double)left >= (Double)right;
                     }
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador '>=' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El operador '>=' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'"));
                     return null;
                 case Tipo.MENORIGUAL:
                     left = izquierda.ejeuctar(ts);
@@ -252,6 +266,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                         return (Double)left <= (Double)right;
                     }
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador '<=' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El operador '<=' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'"));
                     return null;
                 case Tipo.IGUAL:
                     left = izquierda.ejeuctar(ts);
@@ -272,6 +287,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                         }
                     }
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador '=' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El operador '=' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'"));
                     return null;
                 case Tipo.DIFRENTE:
                     left = izquierda.ejeuctar(ts);
@@ -292,6 +308,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                         }
                     }
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador '<>' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El operador '<>' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'"));
                     return null;
                 case Tipo.OR:
                     left = izquierda.ejeuctar(ts);
@@ -301,6 +318,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                         return (Boolean)left || (Boolean)right;
                     }
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador 'or' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El operador 'or' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'"));
                     return null;
                 case Tipo.AND:
                     left = izquierda.ejeuctar(ts);
@@ -310,6 +328,7 @@ namespace OCL2_Proyecto1_201800586.Arbol.Valores
                         return (Boolean)left && (Boolean)right;
                     }
                     Form1.consola.Text += "Linea: " + linea + " Columna: " + columna + " El operador 'and' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'\n";
+                    Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "El operador 'and' no se puede ejecutar un '" + izquierda.tipo + "' con un '" + derecha.tipo + "'"));
                     return null;
                 default:
                     return null;

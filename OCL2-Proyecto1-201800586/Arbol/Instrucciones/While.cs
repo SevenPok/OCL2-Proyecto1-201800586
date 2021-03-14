@@ -1,4 +1,5 @@
-﻿using OCL2_Proyecto1_201800586.Arbol.Interfaces;
+﻿using OCL2_Proyecto1_201800586.Analizador;
+using OCL2_Proyecto1_201800586.Arbol.Interfaces;
 using OCL2_Proyecto1_201800586.Arbol.Valores;
 using System;
 using System.Collections.Generic;
@@ -40,13 +41,22 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
                         {
                             return null;
                         }
-                        
+                        else if (o is Continue || ins is Continue)
+                        {
+                            break;
+                        }
+                        else if (o is Exit)
+                        {
+                            return o;
+                        }
+
                     }
                 }
             }
             else
             {
                 Form1.consola.Text += "La sentencia while solo acepta condiciones logicas y relacionales.";
+                Sintactico.errores.AddLast(new Errores(linea, columna, "", Errores.Tipo.SEMANTICO, "La sentencia while solo acepta condiciones logicas y relacionales"));
             }
             return null;
 

@@ -25,6 +25,14 @@ namespace OCL2_Proyecto1_201800586.Arbol.Instrucciones
             foreach(Instruccion sentencia in sentencias)
             {
                 sentencia.ejeuctar(ts);
+                if (sentencia.GetType().Equals(typeof(Continue)))
+                {
+                    return new Continue(0, 0);
+                }
+                else if (sentencia is Exit)
+                {
+                    return sentencia;
+                }
             }
             return null;
         }
