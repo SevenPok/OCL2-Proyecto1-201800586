@@ -60,6 +60,14 @@ namespace OCL2_Proyecto1_201800586.Analizador
                 //Form1.consola.Text += "\nLa lisata tiene: " + funciones.Count.ToString();
                 return true;
             }
+            else
+            {
+                //if (MessageBox.Show("Ocurrio un error desea imprimir los errores?","Error Lexico y Sintactico", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) != DialogResult.Yes)
+                //{
+                //    Reporte reporte = new Reporte();
+                //    reporte.errorLexicoSintactico(arbol, raiz);
+                //}
+            }
 
             return false;
         }

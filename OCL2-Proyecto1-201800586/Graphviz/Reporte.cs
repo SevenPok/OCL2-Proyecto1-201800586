@@ -11,21 +11,7 @@ using System.Text;
 namespace OCL2_Proyecto1_201800586.Graphviz
 {
     class Reporte
-    {
-        int i = 0;
-        public void graficarArbol(ParseTreeNode raiz)
-        {
-            String arbolAST = "digraph ArbolAST{\n";
-            arbolAST += "}";
-            Graficador graficar = new Graficador();
-            graficar.graficar(arbolAST);
-            var p = new Process();
-            p.StartInfo = new ProcessStartInfo(@"C:\compiladores2\arbolAST.svg")
-            {
-                UseShellExecute = true
-            };
-            p.Start();
-        }
+    {       
 
         public void Html_Errores(LinkedList<Errores> listaError)
         {
@@ -186,6 +172,65 @@ namespace OCL2_Proyecto1_201800586.Graphviz
             p.Start();
 
 
+        }
+
+        public void errorLexicoSintactico(ParseTree arbol, ParseTreeNode raiz)
+        {
+            String Contenido_html;
+            Contenido_html = "<html><head><meta charset=\u0022utf-8\u0022></head>\n" +
+            "<body>" +
+            "<h1 align='center'>ERRORES ENCONTRADOS</h1></br>" +
+            "<table cellpadding='10' border = '1' align='center'>" +
+            "<tr>" +
+
+            "<td><strong>Descripcion" +
+            "</strong></td>" +
+
+            "<td><strong>Linea" +
+            "</strong></td>" +
+
+            "<td><strong>Columna" +
+            "</strong></td>" +
+
+            "</tr>";
+
+            String Cad_tokens = "";
+            
+            if (arbol.ParserMessages.Count > 0 || raiz == null)
+            {
+                String tempo_tokens;
+                for (int i = 0; i < arbol.ParserMessages.Count; i++)
+                {
+
+                    tempo_tokens = "";
+                    tempo_tokens = "<tr>" +
+
+                    "<td>" + arbol.ParserMessages[i].Message +
+                    "</td>" +
+
+                    "<td>" + arbol.ParserMessages[i].Location.Line +
+                    "</td>" +
+
+                    "<td>" + arbol.ParserMessages[i].Location.Column +
+                    "</td>" +
+
+                    "</tr>";
+                    Cad_tokens = Cad_tokens + tempo_tokens;
+                }
+            }
+
+            Contenido_html = Contenido_html + Cad_tokens +
+            "</table>" +
+            "</body>" +
+            "</html>";
+
+            File.WriteAllText("C:\\compiladores2\\Reporte_de_Errores_Lexicos_Sintacticos.html", Contenido_html);
+            var p = new Process();
+            p.StartInfo = new ProcessStartInfo(@"C:\compiladores2\Reporte_de_Errores_Lexicos_Sintacticos.html")
+            {
+                UseShellExecute = true
+            };
+            p.Start();
         }
 
     }

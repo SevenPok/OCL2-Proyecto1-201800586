@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace OCL2_Proyecto1_201800586.Graphviz
@@ -22,6 +23,12 @@ namespace OCL2_Proyecto1_201800586.Graphviz
             procedimiento.StartInfo = procesoStart;
             procedimiento.Start();
             procedimiento.WaitForExit();
+            var p = new Process();
+            p.StartInfo = new ProcessStartInfo(@"C:\compiladores2\AST.svg")
+            {
+                UseShellExecute = true
+            };
+            p.Start();
         }
 
         public void graficar(String texto)
